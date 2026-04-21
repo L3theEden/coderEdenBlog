@@ -1,6 +1,8 @@
 ---
 import '~/styles/global.css';
 import { THEME_INIT } from '~/scripts/theme-init';
+import Nav from '~/components/nav/Nav.astro';
+import Footer from '~/components/nav/Footer.astro';
 
 interface Props {
   title: string;
@@ -44,10 +46,10 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <script is:inline set:html={THEME_INIT}></script>
   </head>
   <body class="min-h-screen">
-    <slot name="header" />
+    <Nav />
     <main>
       <slot />
     </main>
-    <slot name="footer" />
+    <Footer />
   </body>
 </html>

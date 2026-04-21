@@ -1,0 +1,85 @@
+---
+import ThemeToggle from './ThemeToggle.astro';
+
+const pathname = Astro.url.pathname;
+const items = [
+  { href: '/',         label_en: 'Prologue',    label_zh: '序章' },
+  { href: '/blog/',    label_en: 'Chronicles',  label_zh: '编年' },
+  { href: '/series/',  label_en: 'Series',      label_zh: '系列' },
+  { href: '/fragments/', label_en: 'Fragments', label_zh: '碎片' },
+  { href: '/about/',   label_en: 'About',       label_zh: '关于' },
+];
+
+function isActive(href: string) {
+  if (href === '/') return pathname === '/';
+  return pathname.startsWith(href);
+}
+---
+<header class="sticky top-0 z-40 backdrop-blur-sm bg-[color:var(--bg)]/85 border-b border-[color:var(--border)]">
+  <div class="mx-auto max-w-layout px-5 md:px-8 h-16 flex items-center justify-between">
+    <a href="/" class="font-serif text-xl tracking-tight text-text">CoderEden</a>
+
+    <button
+      id="nav-toggle"
+      type="button"
+      class="md:hidden inline-flex items-center justify-center w-11 h-11 text-muted"
+      aria-label="导航"
+      aria-controls="nav-menu"
+      aria-expanded="false"
+    >
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+        <path d="M3 6h16M3 11h16M3 16h16" />
+      </svg>
+    </button>
+
+    <nav id="nav-menu" class="hidden md:flex items-center gap-8 text-[15px]">
+      {items.map((item) => (
+        <a
+          href={item.href}
+          class:list={[
+            'transition-colors',
+            isActive(item.href) ? 'text-text' : 'text-muted hover:text-text',
+          ]}
+        >
+          <span class="font-serif italic mr-1">{item.label_en}</span>
+          <span class="text-faint">· {item.label_zh}</span>
+        </a>
+      ))}
+      <ThemeToggle />
+    </nav>
+  </div>
+
+  <!-- Mobile drawer -->
+  <div id="nav-drawer" class="md:hidden hidden border-t border-[color:var(--border)]">
+    <nav class="mx-auto max-w-layout px-5 py-4 flex flex-col gap-4 text-[16px]">
+      {items.map((item) => (
+        <a
+          href={item.href}
+          class:list={['block', isActive(item.href) ? 'text-text' : 'text-muted']}
+        >
+          <span class="font-serif italic">{item.label_en}</span>
+          <span class="text-faint"> · {item.label_zh}</span>
+        </a>
+      ))}
+      <div class="pt-2"><ThemeToggle /></div>
+    </nav>
+  </div>
+</header>
+
+<script is:inline>
+  (function () {
+    var btn = document.getElementById('nav-toggle');
+    var drawer = document.getElementById('nav-drawer');
+    if (!btn || !drawer) return;
+    btn.addEventListener('click', function () {
+      var open = !drawer.classList.contains('hidden');
+      if (open) {
+        drawer.classList.add('hidden');
+        btn.setAttribute('aria-expanded', 'false');
+      } else {
+        drawer.classList.remove('hidden');
+        btn.setAttribute('aria-expanded', 'true');
+      }
+    });
+  })();
+</script>
