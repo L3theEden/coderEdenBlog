@@ -1,0 +1,27 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import PostCard from '~/components/post/PostCard.astro';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('posts', ({ data }) => !data.draft);
+  const tags = new Set<string>();
+  for (const p of posts) for (const t of p.data.tags) tags.add(t);
+  return [...tags].map((tag) => ({ params: { tag } }));
+}
+
+const { tag } = Astro.params as { tag: string };
+const posts = (await getCollection('posts', ({ data }) => !data.draft && data.tags.includes(tag)))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+---
+<BaseLayout title={`#${tag}`} description={`标签 ${tag} 下的全部文章。`}>
+  <section class="mx-auto max-w-layout px-5 md:px-8 pt-16 pb-10">
+    <p class="text-[11px] uppercase tracking-[0.28em] text-[color:var(--brand)]">Tag</p>
+    <h1 class="mt-4 font-serif text-[44px] md:text-[56px] leading-[1.1] text-text">#{tag}</h1>
+  </section>
+  <section class="mx-auto max-w-layout px-5 md:px-8 pb-24">
+    <div class="grid gap-5 md:grid-cols-2">
+      {posts.map((p) => <PostCard post={p} body={p.body} />)}
+    </div>
+  </section>
+</BaseLayout>
