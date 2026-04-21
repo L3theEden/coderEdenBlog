@@ -1,0 +1,26 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import SeriesCard from '~/components/series/SeriesCard.astro';
+import { SERIES_META, SERIES_ORDER } from '~/data/series';
+
+const posts = await getCollection('posts', ({ data }) => !data.draft);
+const counts = Object.fromEntries(
+  SERIES_ORDER.map((id) => [id, posts.filter((p) => p.data.series === id).length])
+);
+---
+<BaseLayout title="Series" description="五大系列，五种降临。">
+  <section class="mx-auto max-w-layout px-5 md:px-8 pt-16 pb-10">
+    <p class="text-[11px] uppercase tracking-[0.28em] text-[color:var(--brand)]">Series</p>
+    <h1 class="mt-4 font-serif text-[48px] md:text-[60px] leading-[1.08] text-text">系列 · 五种降临</h1>
+    <p class="mt-4 max-w-[56ch] text-[17px] leading-[1.75] text-muted">
+      每个系列借来一位人物——半神、造匠、偷火者或魔鬼——作为那一组文章的引力中心。
+    </p>
+  </section>
+
+  <section class="mx-auto max-w-layout px-5 md:px-8 pb-24 grid gap-6 md:grid-cols-2">
+    {SERIES_ORDER.map((id) => (
+      <SeriesCard meta={SERIES_META[id]} count={counts[id]} />
+    ))}
+  </section>
+</BaseLayout>
