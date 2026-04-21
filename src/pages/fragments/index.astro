@@ -1,0 +1,33 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '~/layouts/BaseLayout.astro';
+
+const fragments = (await getCollection('fragments'))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+---
+<BaseLayout title="Fragments" description="思想碎片、读书札记、格言。">
+  <section class="mx-auto max-w-layout px-5 md:px-8 pt-16 pb-10">
+    <p class="text-[11px] uppercase tracking-[0.28em] text-[color:var(--brand)]">Fragments</p>
+    <h1 class="mt-4 font-serif text-[48px] md:text-[60px] leading-[1.08] text-text">碎片 · 未成文</h1>
+    <p class="mt-4 max-w-[56ch] text-[17px] leading-[1.75] text-muted">
+      未成章的句子、读书的折角、深夜的笔记——以短句保存下来。
+    </p>
+  </section>
+
+  <section class="mx-auto max-w-layout px-5 md:px-8 pb-24">
+    <div class="columns-1 md:columns-2 lg:columns-3 gap-5 [column-fill:_balance]">
+      {fragments.map((f) => (
+        <figure class="break-inside-avoid mb-5 rounded-md bg-[color:var(--surface)] border border-[color:var(--border)] p-6">
+          <blockquote class="font-serif italic text-[18px] leading-[1.55] text-text">“{f.data.text_zh}”</blockquote>
+          {f.data.text_en && (
+            <p class="mt-2 font-serif italic text-[14px] text-muted">{f.data.text_en}</p>
+          )}
+          <figcaption class="mt-4 flex items-center justify-between text-[11px] uppercase tracking-[0.12em] text-faint">
+            <span>— {f.data.author}</span>
+            <time>{f.data.date.toLocaleDateString('zh-CN', { year:'numeric', month:'short', day:'numeric' })}</time>
+          </figcaption>
+        </figure>
+      ))}
+    </div>
+  </section>
+</BaseLayout>
