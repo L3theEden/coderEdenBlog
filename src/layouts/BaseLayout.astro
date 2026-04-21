@@ -1,0 +1,53 @@
+---
+import '~/styles/global.css';
+import { THEME_INIT } from '~/scripts/theme-init';
+
+interface Props {
+  title: string;
+  description?: string;
+  ogImage?: string;
+}
+
+const {
+  title,
+  description = 'CoderEden — notes from the workshop of a stolen fire.',
+  ogImage = '/og/default.png',
+} = Astro.props;
+
+const canonical = new URL(Astro.url.pathname, Astro.site);
+---
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title} · CoderEden</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+
+    <!-- OG -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImage} />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,500&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap"
+    />
+
+    <!-- FOUC-safe theme -->
+    <script is:inline set:html={THEME_INIT}></script>
+  </head>
+  <body class="min-h-screen">
+    <slot name="header" />
+    <main>
+      <slot />
+    </main>
+    <slot name="footer" />
+  </body>
+</html>
