@@ -1,0 +1,31 @@
+---
+import FlameIcon from '~/components/decor/FlameIcon.astro';
+---
+<section class="relative mx-auto max-w-layout px-5 md:px-8 pt-20 md:pt-32 pb-16 md:pb-24">
+  <div class="grid md:grid-cols-[1fr_auto] gap-12 items-end">
+    <div>
+      <p class="text-[11px] uppercase tracking-[0.28em] text-[color:var(--brand)]">Prologue · 序章</p>
+      <h1 class="mt-5 font-serif text-[44px] sm:text-[56px] md:text-[72px] leading-[1.04] tracking-tight text-text">
+        notes from the workshop<br/>of a <span class="italic">stolen fire</span>.
+      </h1>
+      <p class="mt-6 max-w-[52ch] font-serif text-[20px] leading-[1.55] text-muted">
+        我是 CoderEden。在这里我写代码，也记下偷火时手心的温度——
+        把工程、神话与浮士德放在同一张案几上。
+      </p>
+      <p class="mt-3 max-w-[52ch] text-[15px] leading-[1.7] text-faint italic">
+        An engineer's notebook in which Greek demigods and Goethe occasionally visit.
+      </p>
+      <div class="mt-10 flex flex-wrap gap-3">
+        <a href="/blog/" class="inline-flex items-center rounded-md bg-[color:var(--brand)] text-[#faf9f5] px-5 h-11 text-[15px] font-medium hover:opacity-95">
+          Read the chronicles ↗
+        </a>
+        <a href="/series/" class="inline-flex items-center rounded-md bg-[color:var(--surface-2)] text-[color:var(--text)] px-5 h-11 text-[15px] font-medium hover:shadow-ring1">
+          Enter a series
+        </a>
+      </div>
+    </div>
+    <div class="hidden md:block">
+      <FlameIcon />
+    </div>
+  </div>
+</section>

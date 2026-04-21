@@ -1,11 +1,71 @@
 ---
+import { getCollection } from 'astro:content';
 import BaseLayout from '~/layouts/BaseLayout.astro';
+import Hero from '~/components/home/Hero.astro';
+import SeriesCard from '~/components/series/SeriesCard.astro';
+import PostCard from '~/components/post/PostCard.astro';
+import OrnamentalDivider from '~/components/decor/OrnamentalDivider.astro';
+import { SERIES_META, SERIES_ORDER } from '~/data/series';
+
+const posts = (await getCollection('posts', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+const recent = posts.slice(0, 3);
+
+const countsBySeries = Object.fromEntries(
+  SERIES_ORDER.map((id) => [id, posts.filter((p) => p.data.series === id).length])
+);
+
+const fragments = (await getCollection('fragments'))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .slice(0, 3);
 ---
 <BaseLayout title="Prologue">
-  <section class="mx-auto max-w-layout px-6 py-24">
-    <h1 class="font-serif text-5xl md:text-6xl leading-[1.1] text-text">
-      CoderEden
-    </h1>
-    <p class="mt-4 text-muted">boot — hero comes in Task 10</p>
+  <Hero />
+
+  <section class="mx-auto max-w-layout px-5 md:px-8 py-16">
+    <div class="flex items-baseline justify-between">
+      <h2 class="font-serif text-[32px] md:text-[40px] text-text">Series · 系列</h2>
+      <a href="/series/" class="text-[14px] text-muted hover:text-text">all →</a>
+    </div>
+    <div class="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+      {SERIES_ORDER.map((id) => (
+        <SeriesCard meta={SERIES_META[id]} count={countsBySeries[id]} />
+      ))}
+    </div>
+  </section>
+
+  <OrnamentalDivider />
+
+  <section class="mx-auto max-w-layout px-5 md:px-8 py-8">
+    <div class="flex items-baseline justify-between">
+      <h2 class="font-serif text-[32px] md:text-[40px] text-text">Recent · 近作</h2>
+      <a href="/blog/" class="text-[14px] text-muted hover:text-text">all chronicles →</a>
+    </div>
+    <div class="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+      {recent.map((p) => <PostCard post={p} body={p.body} />)}
+    </div>
+  </section>
+
+  <OrnamentalDivider />
+
+  <section class="mx-auto max-w-layout px-5 md:px-8 py-8 pb-24">
+    <div class="flex items-baseline justify-between">
+      <h2 class="font-serif text-[32px] md:text-[40px] text-text">Fragments · 碎片</h2>
+      <a href="/fragments/" class="text-[14px] text-muted hover:text-text">all →</a>
+    </div>
+    <div class="mt-8 grid gap-5 md:grid-cols-3">
+      {fragments.map((f) => (
+        <figure class="rounded-md bg-[color:var(--surface)] border border-[color:var(--border)] p-6">
+          <blockquote class="font-serif italic text-[17px] leading-[1.55] text-text">
+            "{f.data.text_zh}"
+          </blockquote>
+          {f.data.text_en && (
+            <p class="mt-2 font-serif italic text-[14px] text-muted">{f.data.text_en}</p>
+          )}
+          <figcaption class="mt-4 text-[11px] uppercase tracking-[0.12em] text-faint">— {f.data.author}</figcaption>
+        </figure>
+      ))}
+    </div>
   </section>
 </BaseLayout>
