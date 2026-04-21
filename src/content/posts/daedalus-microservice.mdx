@@ -1,0 +1,34 @@
+---
+title: "微服务迷宫的入口必须比出口醒目"
+title_en: "Make the Entrance Brighter Than the Exit"
+description: "代达罗斯造迷宫时记得了线团，但我们造服务网时，常常把监控藏在最深处。"
+epigraph:
+  text_en: "Ingenium, ait, inclusit. — He shut his genius inside."
+  text_zh: "他把自己的天才关了进去。"
+  source: "Ovid, Metamorphoses VIII"
+series: "daedalus-labyrinth"
+tags: ["architecture", "microservices", "observability"]
+date: 2026-04-10
+---
+
+## 一、我们都造过迷宫
+
+第一年我造了一个 7 服务的小世界。第二年变成 23 个。第三年我在自己的代码库里迷路了。
+
+代达罗斯造迷宫之前，会先给忒修斯一个线团。我们呢？通常先写 Dockerfile。
+
+## 二、线团是什么？
+
+- **一个可以 grep 到全链路的 trace-id**
+- **一张不需要登录三个系统就能看见的调用图**
+- **一段让新人第一天能跑起来的 `make dev`**
+
+没有这三样，你造的不是架构，是给同事的惩罚。
+
+> 迷宫的精妙与否，不看它多弯，看它能不能让人走得出来。
+
+## 三、入口要比出口亮
+
+新人看到仓库的第一眼，是 README 还是 200 个 YAML？
+
+我现在的习惯：**README 第一屏必须能启动，第二屏必须能调试**。理由很简单——忒修斯下到迷宫，是靠他从入口带下去的那根线。不是靠他在迷宫中央灵光一现。

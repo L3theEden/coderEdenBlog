@@ -1,0 +1,51 @@
+---
+title: "我与 any 的契约"
+title_en: "My Pact with `any`"
+description: "TypeScript 里最甜美的魔鬼交易：只需一个 any，你可以今晚就下班。"
+epigraph:
+  text_en: "Werd' ich zum Augenblicke sagen: Verweile doch! du bist so schön!"
+  text_zh: "若我向瞬间呼唤：停一停吧！你真美！"
+  source: "Goethe, Faust I"
+series: "fausts-pact"
+tags: ["typescript", "tech-debt"]
+date: 2026-04-05
+---
+
+## 一、Mephistopheles 的 compile-time
+
+昨夜我写下：
+
+```ts
+function dispatch(payload: any) {
+  handlers[payload.type](payload.value);
+}
+```
+
+键盘上响起的不是错误红线，是一段低沉的德语。那是 Mephistopheles 的声音，他说：**"现在就下班。"**
+
+我下班了。代码跑得好好的。直到三周后——
+
+## 二、付账的那一页
+
+线上告警。`payload.value` 实际上是字符串。`handlers[payload.type]` 不存在。栈底有一行再熟悉不过的日志：`cannot read properties of undefined`。
+
+> 魔鬼从不在签约当夜讨债。他等你忘了合同在哪一页。
+
+## 三、赎回
+
+我写了一个类型收窄的 dispatcher：
+
+```ts
+type Events =
+  | { type: 'click'; value: { x: number; y: number } }
+  | { type: 'submit'; value: string };
+
+function dispatch(event: Events) {
+  switch (event.type) {
+    case 'click': return handlers.click(event.value);
+    case 'submit': return handlers.submit(event.value);
+  }
+}
+```
+
+它让我今晚多下班了半小时。但下次我再写 `any`，我会听见德语诗句——那是我自己写给自己的契约副本。

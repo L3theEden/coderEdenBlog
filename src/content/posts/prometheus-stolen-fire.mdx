@@ -1,0 +1,37 @@
+---
+title: "偷来的火也要有人看管"
+title_en: "Keeper of the Stolen Fire"
+description: "AI 协作工具普及之后，生产力的火种烫在谁的手上？一次对自己的发问。"
+epigraph:
+  text_en: "Prometheus, bringer of fire, who first gave it to mortals — what was his second gift?"
+  text_zh: "普罗米修斯把火带给凡人之后，第二样礼物是什么？"
+  source: "After Aeschylus, Prometheus Bound"
+series: "prometheus-fire"
+tags: ["engineering-culture", "tooling", "ai"]
+date: 2026-03-28
+---
+
+## 一、被盗的不是火，是责任
+
+我用 AI 助手写下一段代码时，那一刻的体感接近偷窃：它替我生成了五十行我不愿亲手敲完的样板。我按下 Tab，五十行接收——像火苗落在凡人的掌心。
+
+> 火一旦被偷走，看守者的席位就空出来了。
+
+偷火这件事在神话里不是终点。真正决定命运的是：偷来之后，谁来看守？谁来确保火不烧了村子？
+
+## 二、守护者的工作清单
+
+- **Review 不是 Review**：不是看语法，是问"这段代码回答了谁的问题"。
+- **测试不是验证**：是给后来的人留下一枚"此处确曾燃烧过"的火种标记。
+- **命名不是命名**：是替火取一个不让下一个人误以为是灰烬的名字。
+
+```ts
+// 这段是 AI 给的。我问自己：我真的懂它为何不用 Promise.allSettled 吗？
+const results = await Promise.all(tasks.map((t) => t.run()));
+```
+
+我删掉这行，换成自己写的五行——慢了，但我成了火的看守者而不只是携带者。
+
+## 三、凡人学会与火共处，需要第二种勇气
+
+第一种勇气让我们接过火。第二种勇气让我们在它灼手的时候仍旧不松开。我越发觉得，后一种才是工程师与 AI 协作时真正稀缺的品质。

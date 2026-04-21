@@ -1,0 +1,49 @@
+---
+title: "向 core dump 里下降时，请不要回头"
+title_en: "Do Not Look Back, Going Down"
+description: "一次 memory corruption 的调试笔记。对话体复盘，以及俄耳甫斯教我的事。"
+epigraph:
+  text_en: "Sie war schon Wurzel. / She was already root."
+  text_zh: "她已成根。"
+  source: "Rilke, Orpheus. Eurydike. Hermes."
+series: "orphic-descent"
+tags: ["debugging", "postmortem", "c++"]
+date: 2026-04-17
+---
+
+## 一、下降
+
+周四 23:41，告警从 pager 进来：一个服务的 tail latency 掉到地底。我点开 grafana，像俄耳甫斯提起里拉琴——向下走。
+
+```
+#0  memcpy (dest=0x0, src=0x7fabc0..., n=4096)
+#1  serialize_frame (f=<optimized out>) at frame.cc:87
+#2  0x00007f... in std::thread::_Invoker<...>::operator()()
+```
+
+`dest=0x0`——这不是 bug，这是一句谶语。
+
+## 二、回头的诱惑
+
+> 每个 debugger 都知道一个秘密：往上翻两帧就能看见出事的地方。但 Rilke 告诉你——别回头。
+
+第一次我翻到 frame 2，看到一个自信的断言 `assert(state == READY)`。我以为自己找到了。我 merge 了修复——状态机加了一把锁。
+
+她还是死在根里。
+
+## 三、第二次下降
+
+这一次我没有往上翻。我继续下降到 frame 0——memcpy 本身。我在它前一行读 dest 的来源：
+
+```cpp
+auto* dest = pool.acquire(size);   // returns nullptr when exhausted
+memcpy(dest, src, size);           // 我从未检查
+```
+
+池空了。我只是没看。
+
+俄耳甫斯回头，因为他不信任死者会跟上。我回头，因为我不信任机器会告诉我真相。两种不信任，代价一样。
+
+## 四、尾声
+
+修复只有一行——`if (!dest) throw PoolExhausted{};`。但我把这一次事故的日期刻在墙上了。

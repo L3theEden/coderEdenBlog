@@ -1,0 +1,39 @@
+---
+title: "每天推一次主分支，如同推石上山"
+title_en: "Pushing main, pushing the stone"
+description: "rebase、解冲突、重推——如果这就是日常，它值得被当成一种冥想。"
+epigraph:
+  text_en: "The struggle itself toward the heights is enough to fill a man's heart."
+  text_zh: "向高处的奋斗本身，足以填满一颗人心。"
+  source: "Camus, Le Mythe de Sisyphe"
+series: "sisyphus-stone"
+tags: ["git", "workflow", "mindfulness"]
+date: 2026-04-14
+---
+
+## 一、每日早晨的仪式
+
+```bash
+git fetch origin
+git rebase origin/main
+# conflict.
+git mergetool
+git rebase --continue
+git push --force-with-lease
+```
+
+四年前我为这套流程愤怒。三年前习惯。两年前麻木。今年——我终于学会了把它读作一种冥想。
+
+## 二、石头是一种同伴
+
+Camus 的西西弗斯不是苦役者，是"带着石头的人"。他每天推，不是因为命令，是因为那已经是他与世界之间最确定的一件事。
+
+工程师与他的 main 分支之间，其实也是这样一层关系。
+
+> 我开始相信：rebase 是一种最小单位的忠诚。
+
+## 三、下山的那几秒钟
+
+Camus 最重要的观察不是登顶，是下山。西西弗斯走下山去再推那块石头时，他是自由的——因为他知道自己在做什么。
+
+`--force-with-lease` 之后的几秒钟，我看着 CI 亮起，是我一天里最接近这种自由的时刻。
