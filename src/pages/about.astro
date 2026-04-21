@@ -1,0 +1,119 @@
+---
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import EpigraphQuote from '~/components/post/EpigraphQuote.astro';
+import OrnamentalDivider from '~/components/decor/OrnamentalDivider.astro';
+
+const timeline = [
+  {
+    year: '2017',
+    title: '第一次偷火',
+    text: '我在一台旧 ThinkPad 上写完第一个上线的脚本。凌晨三点，风扇像旧船的锚链。',
+    myth: 'Prometheus brought the ember.',
+  },
+  {
+    year: '2019',
+    title: '进入迷宫',
+    text: '从单体搬进微服务。我学会了在 7 个 repo 间 grep，像代达罗斯的徒弟学着读风。',
+    myth: 'Daedalus began the walls.',
+  },
+  {
+    year: '2021',
+    title: '签下第一笔 any',
+    text: '为赶一次发布，我给核心类型标了 any。三年后的我仍在偿还那一行。',
+    myth: 'The Pact was struck in a small font.',
+  },
+  {
+    year: '2023',
+    title: '下降',
+    text: '一次线上事故教我：debugger 的向导不是栈帧，是耐心本身。莫回首。',
+    myth: 'Orpheus, reminded.',
+  },
+  {
+    year: '2026',
+    title: '开始写这些',
+    text: '决定把代码与神话放在同一张案几上。博客是自己立给自己的石碑。',
+    myth: 'A stone, to push willingly.',
+  },
+];
+---
+<BaseLayout title="About" description="CoderEden — 自述与独白。">
+  <section class="mx-auto max-w-layout px-5 md:px-8 pt-16 pb-10">
+    <p class="text-[11px] uppercase tracking-[0.28em] text-[color:var(--brand)]">About</p>
+    <h1 class="mt-4 font-serif text-[48px] md:text-[64px] leading-[1.08] text-text">关于 · 两个灵魂</h1>
+  </section>
+
+  <section class="mx-auto max-w-layout px-5 md:px-8 pb-6 grid md:grid-cols-2 gap-12">
+    <div>
+      <p class="text-[11px] uppercase tracking-[0.2em] text-faint mb-4">工程师 · The Engineer</p>
+      <p class="font-serif text-[18px] leading-[1.75] text-text">
+        我写代码已经 <strong>九年</strong>。主战场是后端工程、可靠性与工具链；偶尔越界到编辑器插件和前端。
+        我相信——<em>代码是一种可以被反复证伪的写作</em>——所以我努力把每一次提交都当作一句话来遣词。
+      </p>
+    </div>
+    <div>
+      <p class="text-[11px] uppercase tracking-[0.2em] text-faint mb-4">沉思者 · The Contemplator</p>
+      <p class="font-serif text-[18px] leading-[1.75] text-text">
+        同一个九年里，我在读荷马、歌德、里尔克、加缪。他们让我相信——<em>抽象不是代码独有的产业</em>——
+        古希腊人拿神话做抽象，浮士德拿灵魂做抽象，我拿类型系统做抽象。都是造一个小宇宙以维持清醒。
+      </p>
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-layout px-5 md:px-8">
+    <EpigraphQuote
+      text_en="Zwei Seelen wohnen, ach! in meiner Brust, die eine will sich von der andern trennen."
+      text_zh="两个灵魂啊，居于我胸中，一个想要从另一个身上离开。"
+      source="Goethe, Faust I"
+    />
+  </section>
+
+  <OrnamentalDivider />
+
+  <section class="mx-auto max-w-layout px-5 md:px-8 pb-10">
+    <h2 class="font-serif text-[32px] md:text-[40px] text-text">旅程 · A Small Chronicle</h2>
+    <ol class="mt-8 space-y-8">
+      {timeline.map((t) => (
+        <li class="grid md:grid-cols-[120px_1fr] gap-6 items-baseline">
+          <span class="font-serif text-[28px] text-[color:var(--brand)]">{t.year}</span>
+          <div>
+            <p class="font-serif text-[22px] text-text">{t.title}</p>
+            <p class="mt-1 text-[16px] leading-[1.75] text-muted">{t.text}</p>
+            <p class="mt-1 font-serif italic text-[13px] text-faint">— {t.myth}</p>
+          </div>
+        </li>
+      ))}
+    </ol>
+  </section>
+
+  <OrnamentalDivider />
+
+  <section class="mx-auto max-w-layout px-5 md:px-8 pb-24">
+    <h2 class="font-serif text-[32px] md:text-[40px] text-text">独白 · A Closing Monologue</h2>
+    <div class="mt-8 grid md:grid-cols-2 gap-10">
+      <div>
+        <p class="font-serif italic text-[17px] leading-[1.8] text-muted whitespace-pre-line">
+{`I write because I forget.
+I code because I remember wrong.
+Prometheus did not steal the fire,
+he stole the need to watch it.
+I walk down into the core dump
+and promise, this time,
+not to turn around
+until she is whole.`}
+        </p>
+      </div>
+      <div>
+        <p class="font-serif text-[17px] leading-[1.9] text-text whitespace-pre-line">
+{`我写作，因为我遗忘。
+我写代码，因为我记错。
+普罗米修斯偷的不是火——
+是看守火的义务。
+我下降到 core dump 里，
+许下一个诺言：这一次，
+不回头，
+直到她完好如初。`}
+        </p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
