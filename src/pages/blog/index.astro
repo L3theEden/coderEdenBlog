@@ -1,0 +1,50 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import PostCard from '~/components/post/PostCard.astro';
+
+const posts = (await getCollection('posts', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+
+// Group by year
+const byYear = new Map<number, CollectionEntry<'posts'>[]>();
+for (const p of posts) {
+  const y = p.data.date.getFullYear();
+  if (!byYear.has(y)) byYear.set(y, []);
+  byYear.get(y)!.push(p);
+}
+const years = [...byYear.keys()].sort((a, b) => b - a);
+
+const allTags = [...new Set(posts.flatMap((p) => p.data.tags))].sort();
+---
+<BaseLayout title="Chronicles" description="CoderEden 的编年文章。">
+  <section class="mx-auto max-w-layout px-5 md:px-8 pt-16 pb-10">
+    <p class="text-[11px] uppercase tracking-[0.28em] text-[color:var(--brand)]">Chronicles</p>
+    <h1 class="mt-4 font-serif text-[48px] md:text-[60px] leading-[1.08] text-text">编年 · 依时间而下</h1>
+    <p class="mt-4 max-w-[56ch] text-[17px] leading-[1.75] text-muted">
+      按年份倒序排列。每一篇是某一夜的火种、一次下降、或一次与自己的契约。
+    </p>
+  </section>
+
+  <section class="mx-auto max-w-layout px-5 md:px-8 pb-6">
+    <p class="text-[11px] uppercase tracking-[0.12em] text-faint mb-3">Tags · 标签</p>
+    <div class="flex flex-wrap gap-2">
+      {allTags.map((t) => (
+        <a href={`/tags/${t}/`} class="text-[12px] rounded-full border border-[color:var(--border-strong)] px-3 h-7 inline-flex items-center text-muted hover:text-text hover:shadow-ring1">
+          #{t}
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-layout px-5 md:px-8 pb-24">
+    {years.map((year) => (
+      <div class="mt-12">
+        <h2 class="font-serif text-[28px] text-text">{year}</h2>
+        <div class="mt-6 grid gap-5 md:grid-cols-2">
+          {byYear.get(year)!.map((p) => <PostCard post={p} body={p.body} />)}
+        </div>
+      </div>
+    ))}
+  </section>
+</BaseLayout>
