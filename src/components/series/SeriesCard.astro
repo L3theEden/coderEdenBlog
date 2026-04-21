@@ -1,0 +1,27 @@
+---
+import type { SeriesMeta } from '~/data/series';
+
+interface Props {
+  meta: SeriesMeta;
+  count?: number;
+}
+const { meta, count } = Astro.props;
+---
+<a
+  href={`/series/${meta.id}/`}
+  class="group block rounded-lg bg-[color:var(--surface)] border border-[color:var(--border)] p-7 transition-all duration-200 hover:shadow-ring1"
+>
+  <div class="flex items-baseline justify-between">
+    <h3 class="font-serif text-[28px] leading-[1.15] text-text group-hover:text-[color:var(--brand)] transition-colors">
+      {meta.label_en}
+    </h3>
+    {count !== undefined && (
+      <span class="text-[11px] uppercase tracking-[0.12em] text-faint">{count} · 篇</span>
+    )}
+  </div>
+  <p class="mt-1 font-serif italic text-[16px] text-muted">{meta.label_zh}</p>
+  <p class="mt-5 text-[15px] leading-[1.7] text-muted">{meta.tagline_zh}</p>
+  <p class="mt-5 font-serif italic text-[15px] text-[color:var(--brand-soft)]">
+    "{meta.epigraph_en}"
+  </p>
+</a>
