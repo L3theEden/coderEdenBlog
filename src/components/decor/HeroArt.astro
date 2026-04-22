@@ -1,0 +1,22 @@
+---
+import FlameIcon from '~/components/decor/FlameIcon.astro';
+
+interface Props {
+  class?: string;
+}
+
+const { class: className = '' } = Astro.props;
+---
+<div class={className}>
+  <img
+    src="/hero-logo.png"
+    alt=""
+    aria-hidden="true"
+    class="hero-art-image block h-auto w-full"
+    onerror="this.classList.add('hidden'); this.nextElementSibling?.classList.remove('hidden');"
+  />
+  <div class="hidden">
+    <FlameIcon />
+  </div>
+</div>
+
