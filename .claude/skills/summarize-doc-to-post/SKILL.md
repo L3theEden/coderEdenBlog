@@ -17,7 +17,7 @@ This skill drafts such a post, under four commitments:
 
 - **Bilingual** — Chinese body, English title / epigraph / section markers
 - **One of 5 series** — each is a philosophical stance, not a topic bucket
-- **Short and hammered** — 600–1200 zh chars, 2–4 `##` sections numbered 一、二、三; one claim, driven through the myth
+- **Short and hammered** — within 5000 zh chars, 2–7 `##` sections numbered 一、二、三、四、五、六、七; one claim, driven through the myth
 - **Review before write** — always present the draft in chat; write the `.mdx` only after the user says 就这样写入
 
 ## The Mythic Lens
@@ -74,7 +74,7 @@ For PDFs over 10 pages, pass `pages: "1-20"` to Read.
    - `date` — today's ISO date
    - `draft` — omit (defaults to `false`)
 
-4. **Outline** 2–4 `##` sections numbered 一、二、三、(四). Never use `#` — `title` renders it. Each section headline is a *phrase*, not a label: ✓ "山顶之夜" ✗ "背景介绍".
+4. **Outline** 2–7 `##` sections numbered 一、二、三、四、五、六、七. Never use `#` — `title` renders it. Each section headline is a *phrase*, not a label: ✓ "山顶之夜" ✗ "背景介绍".
 
 5. **Draft body** — the principle is **one claim, hammered**:
    - Bias for one concrete scene over three abstract points
@@ -141,7 +141,7 @@ Read the six existing posts once to calibrate — they are the canon. In brief:
 
 ```
 Ingest → Mythic question → Name series (+ rationale) →
-Frontmatter → 2–4 sections (一、二、三) → Hammer one claim →
+Frontmatter → 2–7 sections (一、二、三、四、五、六、七) → Hammer one claim →
 Present draft + target path → [await 确认] → Write → npm run check
 ```
 
