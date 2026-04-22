@@ -55,6 +55,8 @@ Skip if: user only wants a one-sentence aphorism — that belongs in `src/conten
 
 For PDFs over 10 pages, pass `pages: "1-20"` to Read.
 
+If the user pastes a broken or noisy local path, repair it before giving up. Common cases: duplicated path segments, line-wrap corruption, or punctuation pasted into the middle of the path. State the repaired path briefly, then continue.
+
 ## Workflow
 
 1. **Ingest** the source. Note: central claim, any quotable line, the emotional temperature (is the author tired? proud? rueful?).
@@ -83,14 +85,35 @@ For PDFs over 10 pages, pass `pages: "1-20"` to Read.
    - End with a short landing section that resolves the mythic tension (see `prometheus-stolen-fire.mdx` §三, `sisyphus-rebase.mdx` §三, `orphic-core-dump.mdx` §四)
    - Occasional inline English where it lands better than translation
 
-6. **Present the draft** in the chat with target path:
+6. **Humanize before presenting** (optional but recommended). If the draft reads too smooth, too balanced, or too "well-composed," do one anti-AI pass:
+   - cut summary-like throat-clearing
+   - remove inflated significance language
+   - vary paragraph rhythm
+   - keep one honest claim, one concrete scene
+   - preserve the writer's intention; do not flatten the voice into generic "natural" prose
+
+7. **Present the draft** in the chat with target path:
    ```
    目标路径：src/content/posts/<slug>.mdx
    [full frontmatter + body]
    ```
    Ask: 就这样写入？
 
-7. **On confirm only**: `Write` the file, then run `npm run check`. Schema error → fix → re-run. Never commit a broken entry.
+8. **On confirm only**: write the file, then run `npm run check`. Schema error → fix → re-run. Never leave a broken entry in `src/content/posts/`.
+
+9. **If the user wants to view the post locally**, distinguish the two Astro paths clearly:
+   - `npm run dev` shows source changes live
+   - `npm run preview` serves the last built `dist/`
+
+   So after writing a post:
+   - if verifying schema only, `npm run check` is enough
+   - if the user will open `preview`, run `npm run build` first
+   - if `preview` was already running before the new post existed, tell the user they may need to rebuild and restart preview
+
+10. **Close the loop**. After write/verification, tell the user:
+   - target file path
+   - expected URL `/blog/<slug>/`
+   - if they do not see it in `preview`, rebuild first
 
 ## Series Rubric — a Philosophical Map
 
@@ -136,13 +159,17 @@ Read the six existing posts once to calibrate — they are the canon. In brief:
 | Ending with a bullet-list or "综上"                      | End with an image or an action — one last concrete thing     |
 | Writing the file before user confirms                    | Always present draft first; `Write` only on 确认              |
 | Slug collides with existing post                         | Rename before writing                                        |
+| User cannot see the new post in `preview`                | `preview` reads `dist/`; run `npm run build` before preview  |
+| Treating a noisy pasted path as unreadable immediately   | Repair obvious path corruption before failing                |
+| Draft sounds polished but bloodless                      | Run one humanizing pass before presenting                    |
 
 ## Quick Reference
 
 ```
-Ingest → Mythic question → Name series (+ rationale) →
+Ingest → Repair path if needed → Mythic question → Name series (+ rationale) →
 Frontmatter → 2–7 sections (一、二、三、四、五、六、七) → Hammer one claim →
-Present draft + target path → [await 确认] → Write → npm run check
+Humanize pass → Present draft + target path → [await 确认] →
+Write → npm run check → npm run build if user will use preview
 ```
 
 ## Verification
