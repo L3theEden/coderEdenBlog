@@ -23,6 +23,13 @@ const posts = defineCollection({
         source: z.string(),
       })
       .optional(),
+    scholia: z
+      .object({
+        href: z.string(),
+        title: z.string().optional(),
+        description: z.string().optional(),
+      })
+      .optional(),
     series: z.enum(SERIES),
     tags: z.array(z.string()).default([]),
     date: z.coerce.date(),

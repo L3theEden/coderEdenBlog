@@ -1,0 +1,6 @@
+interface:
+  display_name: "CoderEden Blog Dev"
+  short_description: "Develop and extend the CoderEden Astro blog"
+  brand_color: "#c96442"
+  default_prompt: "Use $codereden-blog-dev to make a scoped change in the CoderEden Blog repository."
+

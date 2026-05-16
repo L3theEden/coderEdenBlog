@@ -1,0 +1,38 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+type Scholia = NonNullable<CollectionEntry<'posts'>['data']['scholia']>;
+
+interface Props {
+  scholia: Scholia;
+  variant: 'inline' | 'block';
+}
+
+const { scholia, variant } = Astro.props;
+const title = scholia.title ?? '技术注疏';
+const description = scholia.description ?? '把这一篇里的隐喻拆回机制、代码与结论。';
+---
+
+{variant === 'inline' ? (
+  <a
+    href={scholia.href}
+    class="mt-5 inline-flex items-center gap-2 rounded-full border border-[color:var(--border-strong)] bg-[color:var(--surface)] px-3 py-2 text-[13px] leading-none text-muted transition-all duration-200 hover:text-text hover:shadow-ring1"
+  >
+    <span class="font-serif italic text-[color:var(--brand)]">Scholia</span>
+    <span class="text-faint">·</span>
+    <span>{title}</span>
+    <span aria-hidden="true">→</span>
+  </a>
+) : (
+  <a
+    href={scholia.href}
+    class="group mt-12 block rounded-md border border-[color:var(--border)] bg-[color:var(--surface)] p-6 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-ring1 md:p-7"
+  >
+    <p class="text-[11px] uppercase tracking-[0.18em] text-[color:var(--brand)]">Scholia</p>
+    <h2 class="mt-2 font-serif text-[28px] leading-[1.2] text-text">{title}</h2>
+    <p class="mt-3 max-w-[58ch] text-[15px] leading-[1.7] text-muted">{description}</p>
+    <p class="mt-4 text-[14px] text-muted transition-colors group-hover:text-text">
+      阅读注疏 <span aria-hidden="true">→</span>
+    </p>
+  </a>
+)}
