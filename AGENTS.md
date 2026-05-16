@@ -40,7 +40,7 @@ Static blog built with **Astro 5 + TypeScript**, output is pure HTML/CSS/JS. No 
 These are non-obvious rules called out in the plan's Operating Principles and spec:
 
 - **Never hard-code hex values in components.** All colors go through CSS variables from `tokens.css` (e.g. `bg-[color:var(--brand)]`, not `bg-[#c96442]`). This is how the theme toggle works without touching component code.
-- **Bilingual content.** English for titles, epigraphs, section markers, and navigation labels; Chinese for body copy. Frontmatter often has both `title` (zh) and `title_en`.
+- **Bilingual content.** English for navigation labels, series names, epigraphs, and the `Scholia` label; Chinese for body copy and often for companion titles. Frontmatter often has both `title` (zh) and `title_en`.
 - **Serifs at weight 500 only.** All headlines use Fraunces 500 (never 400 or 700). The spec is explicit that single-weight consistency is the typographic identity.
 - **Warm-only neutrals.** Every gray has a yellow-brown undertone. No cool blue-grays anywhere. Focus Blue (`#3898ec`) is the *only* cool color, reserved for `:focus-visible` rings.
 - **Ring shadows, not drop shadows.** Use `shadow-ring1` (`0 0 0 1px var(--ring)`) or `shadow-whisper` (`0 4px 24px rgba(0,0,0,0.05)`) — never generic drop shadows.

@@ -17,7 +17,7 @@ Core files:
 - `docs/superpowers/specs/2026-04-21-coder-eden-blog-design.md` — Chinese design and acceptance spec
 - `docs/superpowers/plans/2026-04-21-coder-eden-blog.md` — original task plan, useful for intent and file naming
 - `.agents/skills/codereden-blog-dev/` — project development skill
-- `.agents/skills/summarize-doc-to-post/` — source-to-post drafting skill
+- `.agents/skills/summarize-doc-to-post/` — source-to-post, Scholia, and paired article drafting skill
 
 ## Architecture
 

@@ -59,14 +59,14 @@ For UI changes, also run `npm run dev` and smoke-test the changed route in a bro
 - Keep neutrals warm. `--focus` is the only cool blue and is reserved for focus-visible rings.
 - Prefer ring shadows (`shadow-ring1`) and `--shadow-whisper`; avoid generic drop shadows.
 - Use the `~/*` alias for `src/*` imports when local code already does.
-- English is used for navigation, series names, epigraphs, and companion titles; Chinese is primary for body copy.
+- English is used for navigation, series names, epigraphs, and the `Scholia` label; Chinese is primary for body copy and may be used for companion titles.
 - Content series are constrained to the five ids in `src/content/config.ts` and `src/data/series.ts`.
 
 ## Content Additions
 
 For requests to add or draft a long post:
 
-- Use `summarize-doc-to-post` when the user provides or points to source material: pasted text, a URL, a local file, notes, or a document to reframe into a CoderEden post.
+- Use `summarize-doc-to-post` when the user provides or points to source material: pasted text, a URL, a local file, notes, a document, an existing post, or asks for a literary post, Scholia technical note, or paired main article plus companion note.
 - Do not force `summarize-doc-to-post` for fragments, typo fixes, frontmatter-only edits, tag/series plumbing, or UI changes.
 - If the user asks for a new post but gives no source or angle, ask for the source/claim first unless they explicitly want a blank/manual scaffold.
 
