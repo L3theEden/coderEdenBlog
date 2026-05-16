@@ -1,0 +1,207 @@
+---
+title: "synchronized 的技术注疏"
+title_en: "Scholia for `synchronized`"
+description: "把《每一次 synchronized，都是一次签约》里的隐喻拆回技术事实：monitor、字节码、对象头、内存语义、锁优化与现代 JDK 的版本差异。"
+epigraph:
+  text_en: "An unlock on a monitor happens-before every subsequent lock on that monitor."
+  text_zh: "对同一个监视器的解锁，先行发生于随后每一次加锁。"
+  source: "JLS §17.4.5"
+series: "fausts-pact"
+tags: ["java", "concurrency", "jvm"]
+date: 2026-05-16
+---
+
+对应主文：[《每一次 synchronized，都是一次签约》](/blog/synchronized-as-pact/)。
+
+这篇注疏只做一件事：把 `synchronized` 从隐喻拆回机制。它不是“更正确的版本”，而是给那篇文章补上可查、可验证、可迁移到代码里的技术边界。
+
+## 一、先看语义：锁的是 monitor，不是关键字本身
+
+`synchronized` 提供两件事：互斥和可见性。
+
+互斥来自 monitor。Java 语言层面可以写三种形态：
+
+```java
+class Account {
+  synchronized void deposit(long amount) {
+    balance += amount;          // 锁 this
+  }
+
+  static synchronized void reloadConfig() {
+    // 锁 Account.class
+  }
+
+  void transfer(Account target, long amount) {
+    synchronized (this) {       // 锁括号里的对象
+      balance -= amount;
+      target.balance += amount;
+    }
+  }
+}
+```
+
+实例同步方法锁的是接收者对象，也就是 `this`；静态同步方法锁的是这个类对应的 `Class` 对象；同步代码块锁的是括号表达式求值出来的对象。表达式如果是 `null`，进入同步块前就会抛 `NullPointerException`。
+
+这也是为什么“锁住一段代码”只是口语。真正被锁住的是某个对象关联的 monitor。同一把锁必须被所有参与者共同使用；如果写操作锁 `this`，读操作却锁另一个 `new Object()`，它们之间没有同步关系。
+
+## 二、再看字节码：方法和代码块不是同一种形态
+
+同步方法通常不是在方法体里显式插入 `monitorenter` / `monitorexit`。编译后，方法会带上 `ACC_SYNCHRONIZED` 标志，JVM 在调用和返回时隐式进入、退出 monitor。
+
+同步代码块则会在字节码里看到 `monitorenter` / `monitorexit`。一个简化例子：
+
+```java
+void block(Object lock) {
+  synchronized (lock) {
+    touch();
+  }
+}
+```
+
+典型字节码会是这样的形状：
+
+```text
+aload_1
+dup
+astore_2
+monitorenter
+aload_0
+invokevirtual #touch
+aload_2
+monitorexit
+goto L_end
+astore_3
+aload_2
+monitorexit
+aload_3
+athrow
+L_end:
+return
+```
+
+这里有两个 `monitorexit`，不是因为加了两次锁，而是为了保证正常路径和异常路径都能释放同一个 monitor。你在源码里写一个 `synchronized` 块，编译器需要替你把“离开时释放”这件事补全。
+
+## 三、内存语义：退出锁不是只放行线程
+
+`synchronized` 不只是排队。它还给 Java Memory Model 一条清楚的 happens-before 边：
+
+```java
+class Holder {
+  private int value;
+
+  synchronized void write(int v) {
+    value = v;
+  }
+
+  synchronized int read() {
+    return value;
+  }
+}
+```
+
+如果线程 A 调用 `write(42)` 并退出这个同步方法，线程 B 随后进入同一个对象上的 `read()`，那么 A 在解锁前的写入对 B 是可见的。关键条件有两个：
+
+- 必须是同一个 monitor。
+- 写入和读取都必须被这条同步路径覆盖。
+
+所以 `synchronized` 和 `volatile` 不能机械互换。`volatile` 适合单个变量的可见性和有序性；`synchronized` 同时提供互斥、可见性和复合操作的原子边界。`count++` 这种读-改-写，不会因为字段是 `volatile` 就变成原子操作，但放在同一把 monitor 后可以成为一个临界区。
+
+## 四、对象头与锁状态：这是 HotSpot 实现，不是语言规范
+
+主文里说“对象头的 Mark Word、偏向锁、轻量级锁、重量级锁”，这套说法主要来自 HotSpot 的历史实现，尤其是 JDK 6 到 JDK 8/11 时代常见的教学模型。
+
+它的价值是帮助理解：JVM 并不想一上来就进入昂贵的 OS 阻塞路径。无竞争时，它会尽量走很轻的 fast path；竞争变多或临界区变长时，再进入和 `ObjectMonitor` 相关的 inflated path。
+
+但要注意版本边界：
+
+- 偏向锁曾经用于优化“同一个线程反复进入同一把锁”的场景。
+- JDK 15 通过 JEP 374 默认禁用并废弃偏向锁相关选项。
+- JDK 22 之后，HotSpot 又引入了新的 lightweight locking 模式；OpenJDK 文档明确提到，这个模式不再把栈上锁记录地址塞进对象的第一个 word。
+
+所以，今天写技术文时不要把“四种锁状态”当成 Java 语言保证。更稳妥的说法是：
+
+> Java 规范定义 monitor 语义；HotSpot 在不同 JDK 版本里用不同 fast path 和 inflated monitor 实现它。
+
+这样说不够戏剧化，但更能活到下一个 JDK。
+
+## 五、锁升级这句话，要加版本括号
+
+很多文章会说“锁可以升级，不能降级”。这句话适合解释旧 HotSpot 资料里的一个单次竞争路径：对象从无锁/偏向/轻量级逐步走向重量级之后，不会在持有期间按原路退回。
+
+但它不是 Java 规范条款，也不应该被当成所有 JDK 的永久实现细节。现代 HotSpot 会对空闲 monitor 做回收和整理，具体路径还会随 lightweight locking、ObjectMonitorTable 等实现继续变化。
+
+真正应该记住的是成本模型：
+
+- 无竞争时，`synchronized` 应该尽量接近普通方法调用。
+- 短暂竞争时，JVM 可能选择自旋或其他 fast path，避免立刻阻塞线程。
+- 竞争持续或临界区很长时，线程会进入阻塞/唤醒路径，成本转向调度和上下文切换。
+
+这比背锁状态名称更有用。名称会变，成本不会消失。
+
+## 六、wait/notify：它们属于 monitor，不属于 Thread
+
+`Object.wait()`、`notify()`、`notifyAll()` 必须在持有该对象 monitor 的前提下调用：
+
+```java
+synchronized (queue) {
+  while (queue.isEmpty()) {
+    queue.wait();
+  }
+  return queue.removeFirst();
+}
+```
+
+`wait()` 会做两件容易混淆的事：先释放当前 monitor，让别的线程有机会进入；被唤醒后，再重新竞争同一个 monitor，拿到之后才从 `wait()` 返回。
+
+这也是为什么条件判断要写在 `while` 里，而不是 `if` 里。线程被唤醒，不等于条件已经满足；它只是重新获得了检查条件的资格。
+
+## 七、现代 JDK 下，怎么选 synchronized
+
+如果只需要保护一个小临界区，`synchronized` 仍然是很好的默认选项：
+
+```java
+private final Object lock = new Object();
+
+void update(State next) {
+  synchronized (lock) {
+    state = next;
+    version++;
+  }
+}
+```
+
+它语法短，异常路径自动释放，语义直接，代码读者也容易看懂。
+
+应该考虑 `ReentrantLock` 或更高层并发工具的情况包括：
+
+- 需要可中断地获取锁。
+- 需要带超时的 `tryLock`。
+- 需要公平锁策略。
+- 需要多个 `Condition` 队列。
+- 读多写少，适合读写锁。
+- 代码已经能用 `ConcurrentHashMap`、队列、信号量、原子类等更高层结构表达。
+
+虚拟线程也需要加版本括号。JDK 21 引入虚拟线程时，长时间在 `synchronized` 内阻塞 I/O 可能导致 carrier platform thread 被 pin 住；JDK 24 的 JEP 491 改进了这件事，使虚拟线程在 `synchronized` 方法或语句里阻塞时可以释放 carrier。结论不是“现在随便在锁里做 I/O”，而是：不要为了一个旧的 pinning 结论，盲目把所有 `synchronized` 改成 `ReentrantLock`。先看 JDK 版本，再看真实竞争和阻塞位置。
+
+## 八、最后的判断表
+
+| 问题 | 直接判断 |
+| --- | --- |
+| `synchronized` 锁住代码还是对象？ | 对象关联的 monitor。 |
+| 实例同步方法锁谁？ | `this`。 |
+| 静态同步方法锁谁？ | 当前类的 `Class` 对象。 |
+| 同步块锁谁？ | 括号表达式得到的那个对象。 |
+| 可见性靠什么？ | 同一 monitor 上 unlock happens-before 后续 lock。 |
+| 偏向锁还要不要背？ | 要知道历史，但 JDK 15 起默认禁用并废弃，不能当现代默认路径。 |
+| 什么时候不用 `synchronized`？ | 需要超时/可中断/公平/多条件队列/读写分离，或有更高层并发结构时。 |
+| 锁里能不能做 I/O？ | 技术上能，工程上通常要避免。临界区越短，代价越可控。 |
+
+如果主文说每一次 `synchronized` 都像签约，这篇注疏只补一句合同条款：你签下的不是“关键字”，而是同一把 monitor 上互斥、可见性、版本实现和调度成本的组合。
+
+## 参考
+
+- [JVMS §3.14 Synchronization](https://docs.oracle.com/javase/specs/jvms/se23/html/jvms-3.html#jvms-3.14)
+- [JLS §17.4.5 Happens-before Order](https://docs.oracle.com/javase/specs/jls/se23/html/jls-17.html#jls-17.4.5)
+- [JEP 374: Deprecate and Disable Biased Locking](https://openjdk.org/jeps/374)
+- [OpenJDK Wiki: Synchronization Using The ObjectMonitorTable](https://wiki.openjdk.org/spaces/HotSpot/pages/138215471/Synchronization+Using+The+ObjectMonitorTable)
+- [JEP 491: Synchronize Virtual Threads without Pinning](https://openjdk.org/jeps/491)
