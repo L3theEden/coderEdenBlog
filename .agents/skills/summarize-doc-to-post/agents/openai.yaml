@@ -1,0 +1,5 @@
+interface:
+  display_name: "CoderEden Post Draft"
+  short_description: "Turn source material into CoderEden posts"
+  brand_color: "#c96442"
+  default_prompt: "Use $summarize-doc-to-post to turn this source into a CoderEden blog post draft."

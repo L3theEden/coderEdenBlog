@@ -1,6 +1,6 @@
 ---
 name: summarize-doc-to-post
-description: Use when the user wants to turn an external source (pasted text, local file path, or URL) into a CoderEden blog post draft — bilingual zh/en, reframed through one of 5 mythological series (Prometheus / Faust / Daedalus / Sisyphus / Orpheus)
+description: Use when the user provides source material or asks to transform pasted text, URLs, local files, notes, documents, or articles into a CoderEden long-form blog post draft.
 ---
 
 # Summarize a Document into a CoderEden Post
@@ -12,6 +12,8 @@ description: Use when the user wants to turn an external source (pasted text, lo
 ## Overview
 
 A post on CoderEden is not a summary of a source — it is a **translation** of the source into a mythic frame. The reader should leave not with "X is true" but with "I've been here before, in an older story."
+
+This skill is for long-form posts in `src/content/posts/`. It is not for fragments, typo fixes, frontmatter-only edits, tag plumbing, or blank scaffolds unless the user explicitly asks to turn a source into a post later.
 
 This skill drafts such a post, under four commitments:
 
@@ -38,22 +40,30 @@ If the draft reads like option 2, it has not yet been written.
 
 ## When to Use
 
-User asks any of:
+Use when the user asks any of:
+
 - "把这篇/这段/这个 URL 总结成一篇博客"
 - "改写 <source> 成博客格式"
 - "帮我基于这个文档写一篇"
+- "把这些笔记整理成一篇 CoderEden 文章"
+- "根据这个文件/链接写一篇长文"
 
-Skip if: user only wants a one-sentence aphorism — that belongs in `src/content/fragments/` (see `新增使用说明.md` §二).
+Skip when:
+
+- user only wants a one-sentence aphorism — that belongs in `src/content/fragments/` (see `新增使用说明.md` §二)
+- user asks only for a slug, tag, typo, frontmatter, or layout edit
+- user wants a blank post scaffold with no source or claim
 
 ## Inputs
 
-| Mode        | How to ingest                                       |
-| ----------- | --------------------------------------------------- |
-| Pasted text | Source is in the user's message                    |
-| Local file  | Read with the Read tool (md / txt / mdx / pdf)     |
-| URL         | Fetch with WebFetch; ask it to return the text      |
+| Mode | How to ingest |
+| --- | --- |
+| Pasted text | Source is in the user's message. Preserve concrete details, code, and any quotable lines. |
+| Local markdown/text/MDX | Read the file directly from the workspace with the normal file tools. |
+| Local PDF/DOCX | Use the project-available PDF/DOCX workflow or extraction tool, then work from the extracted text. |
+| URL | Use the available URL extraction/browser workflow; in this Codex setup, prefer the `defuddle` skill for ordinary web pages and official/docs sources when applicable. |
 
-For PDFs over 10 pages, pass `pages: "1-20"` to Read.
+For large sources, extract only the sections needed for the post. Do not paste or reproduce long copyrighted passages; summarize and quote sparingly.
 
 If the user pastes a broken or noisy local path, repair it before giving up. Common cases: duplicated path segments, line-wrap corruption, or punctuation pasted into the middle of the path. State the repaired path briefly, then continue.
 
@@ -61,8 +71,8 @@ If the user pastes a broken or noisy local path, repair it before giving up. Com
 
 1. **Ingest** the source. Note: central claim, any quotable line, the emotional temperature (is the author tired? proud? rueful?).
 
-2. **Ask the mythic question** (above). Name the series + a one-line philosophical rationale:
-   > "建议系列：`fausts-pact` — 原文讲用 `any` 换取 sprint 的速度，典型签约当夜不讨账的合同。改吗？"
+2. **Ask the mythic question** (above). Choose the series. If the fit is obvious, state the series + one-line rationale and continue. If two series are genuinely plausible, ask the user to choose before drafting:
+   > "建议系列：`fausts-pact` — 原文讲用 `any` 换取 sprint 的速度，典型签约当夜不讨账的合同。若要换系列，告诉我。"
 
    Accept user override without argument.
 
@@ -70,10 +80,10 @@ If the user pastes a broken or noisy local path, repair it before giving up. Com
    - `title` — Chinese, evocative not literal  *("偷来的火也要有人看管"，不是"关于 AI 工具的讨论")*
    - `title_en` — English companion, short and punched
    - `description` — one sentence, 60–100 zh chars
-   - `epigraph` — **prefer a line extracted from the source**; fall back to the series' canonical `epigraph_en` / `epigraph_zh` / `source` in `src/data/series.ts`. A genuine internal quote beats a borrowed famous line.
+   - `epigraph` — **prefer a short line extracted from the source**; fall back to the series' canonical `epigraph_en` / `epigraph_zh` / `source` in `src/data/series.ts`. A genuine internal quote beats a borrowed famous line.
    - `series` — the chosen id
-   - `tags` — 2–4 kebab-case; reuse existing tags where possible (`ls src/content/posts/` then scan frontmatter)
-   - `date` — today's ISO date
+   - `tags` — 2–4 kebab-case; reuse existing tags where possible (`rg '^tags:' src/content/posts`)
+   - `date` — current ISO date from the active environment
    - `draft` — omit (defaults to `false`)
 
 4. **Outline** 2–7 `##` sections numbered 一、二、三、四、五、六、七. Never use `#` — `title` renders it. Each section headline is a *phrase*, not a label: ✓ "山顶之夜" ✗ "背景介绍".
@@ -85,7 +95,7 @@ If the user pastes a broken or noisy local path, repair it before giving up. Com
    - End with a short landing section that resolves the mythic tension (see `prometheus-stolen-fire.mdx` §三, `sisyphus-rebase.mdx` §三, `orphic-core-dump.mdx` §四)
    - Occasional inline English where it lands better than translation
 
-6. **Humanize before presenting** (optional but recommended). If the draft reads too smooth, too balanced, or too "well-composed," do one anti-AI pass:
+6. **Humanize before presenting** (conditional, but expected for most drafts). After the mythic rewrite is complete, use the `humanizer` skill when the draft reads too smooth, too balanced, too explanatory, or too "well-composed." Keep this as a final editing pass, not the source-ingestion or series-selection step. If `humanizer` is not installed or not available, recommend installing <https://github.com/blader/humanizer>; do not install without user consent, and do not block the post draft if the user wants to continue with the built-in anti-AI pass:
    - cut summary-like throat-clearing
    - remove inflated significance language
    - vary paragraph rhythm
@@ -99,7 +109,7 @@ If the user pastes a broken or noisy local path, repair it before giving up. Com
    ```
    Ask: 就这样写入？
 
-8. **On confirm only**: write the file, then run `npm run check`. Schema error → fix → re-run. Never leave a broken entry in `src/content/posts/`.
+8. **On confirm only**: write the file, then run `npm run check`. In Codex, use normal file-editing tools such as `apply_patch`; do not leave a broken entry in `src/content/posts/`. Schema error → fix → re-run.
 
 9. **If the user wants to view the post locally**, distinguish the two Astro paths clearly:
    - `npm run dev` shows source changes live
@@ -138,7 +148,7 @@ When torn: read the `tagline_zh` and `epigraph_zh` of candidate series in `src/d
 
 ## Voice Cues
 
-Read the six existing posts once to calibrate — they are the canon. In brief:
+When the voice feels uncertain, read 2–3 representative existing posts to calibrate. Useful anchors: `prometheus-stolen-fire.mdx`, `faust-any-pact.mdx`, `sisyphus-rebase.mdx`, `orphic-core-dump.mdx`. In brief:
 
 - **Open in medias res.** `## 一、山顶之夜` not `## 一、背景介绍`. Drop the reader on the scene.
 - **First-person, confessional.** The narrator is the one who made the choice, not the one explaining it.
@@ -157,18 +167,21 @@ Read the six existing posts once to calibrate — they are the canon. In brief:
 | Borrowing a famous epigraph when the source has a line  | Extract from source; fame is not authority here              |
 | Stuffing three classical references into one post       | Ration to ≤1 in body; one at epigraph is enough              |
 | Ending with a bullet-list or "综上"                      | End with an image or an action — one last concrete thing     |
-| Writing the file before user confirms                    | Always present draft first; `Write` only on 确认              |
+| Writing the file before user confirms                    | Always present draft first; write only on 确认                |
+| Using unavailable tool names from another agent runtime   | Use the tools available in the current Codex session          |
+| Quoting a long article too heavily                        | Summarize; keep direct quotes short and necessary             |
 | Slug collides with existing post                         | Rename before writing                                        |
 | User cannot see the new post in `preview`                | `preview` reads `dist/`; run `npm run build` before preview  |
 | Treating a noisy pasted path as unreadable immediately   | Repair obvious path corruption before failing                |
-| Draft sounds polished but bloodless                      | Run one humanizing pass before presenting                    |
+| Draft sounds polished but bloodless                      | Use `humanizer` as a final editing pass before presenting    |
+| `humanizer` is unavailable                               | Recommend <https://github.com/blader/humanizer>; continue manually if needed |
 
 ## Quick Reference
 
 ```
 Ingest → Repair path if needed → Mythic question → Name series (+ rationale) →
 Frontmatter → 2–7 sections (一、二、三、四、五、六、七) → Hammer one claim →
-Humanize pass → Present draft + target path → [await 确认] →
+Humanizer/anti-AI pass → Present draft + target path → [await 确认] →
 Write → npm run check → npm run build if user will use preview
 ```
 
