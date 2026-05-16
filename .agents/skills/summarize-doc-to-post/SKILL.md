@@ -20,7 +20,7 @@ For literary posts, this skill drafts under four commitments:
 - **Bilingual** — Chinese title/body, English `title_en` / epigraph / section markers
 - **One of 5 series** — each is a philosophical stance, not a topic bucket
 - **Short and hammered** — within 5000 zh chars, 2–7 `##` sections numbered 一、二、三、四、五、六、七; one claim, driven through the myth
-- **Review before write** — always present the draft in chat; write the `.mdx` only after the user says 就这样写入
+- **Draft gate by default** — present the draft before writing unless the user explicitly asks to write, implement, or update the files now
 
 ## Post Modes
 
@@ -29,10 +29,10 @@ Choose the mode before drafting:
 | Mode | Use when | Output |
 | --- | --- | --- |
 | `literary` | User asks for a CoderEden post, literary technical article, mythic framing, or a source-to-blog transformation. | One mythic long-form post. |
-| `scholia` | User asks for a standalone 正经技术版, 技术注疏, Scholia, or direct technical article. | One direct technical note that explains mechanisms, code, limits, versions, and references. |
+| `scholia` | User asks for a standalone 正经技术版, 技术注疏, Scholia, or direct technical article with no main-post link. | One direct technical note that explains mechanisms, code, limits, versions, and references. |
 | `paired` | User asks for both a literary article and a corresponding serious technical version, asks to add a companion note to an existing literary post, or asks for jump links between them. | A literary post with `scholia` frontmatter plus a linked Scholia technical note. |
 
-Default to `literary` for generic "write a blog post" requests. Default to `scholia` when the user asks for a standalone 正经技术文章, 技术版, 注疏, companion, or Scholia. Use `paired` when there is an existing main post, when drafting both pieces together, or when the user wants the main article and the technical article to jump to each other.
+Default to `literary` for generic "write a blog post" requests. Default to `scholia` when the user asks for a standalone 正经技术文章, 技术版, 注疏, or Scholia. Use `paired` when there is an existing main post, when drafting both pieces together, when the user says companion/对应/配套, or when the user wants the main article and the technical article to jump to each other.
 
 ## The Mythic Lens
 
@@ -67,7 +67,7 @@ Use when the user asks any of:
 
 Skip when:
 
-- user only wants a one-sentence aphorism — that belongs in `src/content/fragments/` (see `新增使用说明.md` §二)
+- user only wants a one-sentence aphorism — that belongs in `src/content/fragments/` (see repo-root `新增使用说明.md` §二)
 - user asks only for a slug, tag, typo, frontmatter, or layout edit
 - user wants a blank post scaffold with no source or claim
 
@@ -140,21 +140,23 @@ If the user pastes a broken or noisy local path, repair it before giving up. Com
    - Include a `## 参考` section for authoritative sources. Keep direct quotes short and cite links.
    - Avoid the word "正经" in UI-facing copy unless the user explicitly wants that tone. Prefer "技术注疏", "Scholia", or a concrete title.
 
-8. **Humanize before presenting** (conditional, but expected for most literary drafts). After the literary rewrite is complete, use the `humanizer` skill when the draft reads too smooth, too balanced, too explanatory, or too "well-composed." Keep this as a final editing pass, not the source-ingestion or series-selection step. For Scholia, humanize for clarity and rhythm, not for mythic atmosphere. If `humanizer` is not installed or not available, recommend installing <https://github.com/blader/humanizer>; do not install without user consent, and do not block the post draft if the user wants to continue with the built-in anti-AI pass:
+8. **Humanize before presenting** (conditional, but expected for most literary drafts). After the literary rewrite is complete, use the `humanizer` skill when available and when the draft reads too smooth, too balanced, too explanatory, or too "well-composed." Keep this as a final editing pass, not the source-ingestion or series-selection step. For Scholia, humanize for clarity and rhythm, not for mythic atmosphere. If `humanizer` is unavailable, continue with the manual anti-AI pass:
    - cut summary-like throat-clearing
    - remove inflated significance language
    - vary paragraph rhythm
    - keep one honest claim, one concrete scene
    - preserve the writer's intention; do not flatten the voice into generic "natural" prose
 
-9. **Present the draft** in the chat with target path(s):
+9. **Present or write the draft** with target path(s):
    ```
    目标路径：src/content/posts/<slug>.mdx
    [full frontmatter + body]
    ```
-   For `paired`, show both paths and make the `scholia.href` / backlink visible. Ask: 就这样写入？
+   Default: present the full draft and ask `就这样写入？`. For `paired`, show both paths and make the `scholia.href` / backlink visible.
 
-10. **On confirm only**: write the file(s), then run `npm run check`. In Codex, use normal file-editing tools such as `apply_patch`; do not leave a broken entry in `src/content/posts/`. Schema error → fix → re-run.
+   If the user explicitly asked to write, implement, update, or execute now, write the file(s) directly after drafting instead of waiting for a second confirmation.
+
+10. **Write and verify**: after confirmation, or immediately when the user already asked for execution, write the file(s), then run `npm run check`. In Codex, use normal file-editing tools such as `apply_patch`; do not leave a broken entry in `src/content/posts/`. Schema error → fix → re-run.
 
 11. **If the user wants to view the post locally**, distinguish the two Astro paths clearly:
    - `npm run dev` shows source changes live
@@ -221,14 +223,14 @@ For Scholia:
 | Borrowing a famous epigraph when the source has a line  | Extract from source; fame is not authority here              |
 | Stuffing three classical references into one post       | Ration to ≤1 in body; one at epigraph is enough              |
 | Ending with a bullet-list or "综上"                      | End with an image or an action — one last concrete thing     |
-| Writing the file before user confirms                    | Always present draft first; write only on 确认                |
+| Writing when the user only asked for a draft              | Present draft first; write after 确认                         |
 | Using unavailable tool names from another agent runtime   | Use the tools available in the current Codex session          |
 | Quoting a long article too heavily                        | Summarize; keep direct quotes short and necessary             |
 | Slug collides with existing post                         | Rename before writing                                        |
 | User cannot see the new post in `preview`                | `preview` reads `dist/`; run `npm run build` before preview  |
 | Treating a noisy pasted path as unreadable immediately   | Repair obvious path corruption before failing                |
 | Draft sounds polished but bloodless                      | Use `humanizer` as a final editing pass before presenting    |
-| `humanizer` is unavailable                               | Recommend <https://github.com/blader/humanizer>; continue manually if needed |
+| `humanizer` is unavailable                               | Continue with the manual anti-AI pass                         |
 | Forcing the mythic lens into Scholia                      | Keep the note direct; one quiet callback is enough            |
 | Forgetting the paired link                                | Literary post owns `scholia`; Scholia note links back in the first paragraph |
 | Writing stale technical facts                             | Check primary sources or official docs for version-sensitive claims |
@@ -240,7 +242,7 @@ For Scholia:
 Ingest → Repair path if needed → Choose mode (literary/scholia/paired) →
 Name series (+ rationale) → Frontmatter (+ scholia for paired) → Slug(s) →
 Draft literary body and/or Scholia body → Humanizer/clarity pass →
-Present draft + target path(s) → [await 确认] →
+Present draft + target path(s), unless user asked to write now →
 Write → npm run check → npm run build if user will use preview
 ```
 

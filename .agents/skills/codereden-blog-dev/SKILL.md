@@ -67,6 +67,7 @@ For UI changes, also run `npm run dev` and smoke-test the changed route in a bro
 For requests to add or draft a long post:
 
 - Use `summarize-doc-to-post` when the user provides or points to source material: pasted text, a URL, a local file, notes, a document, an existing post, or asks for a literary post, Scholia technical note, or paired main article plus companion note.
+- For Scholia or version-sensitive technical content, verify current claims against primary sources or official documentation before writing.
 - Do not force `summarize-doc-to-post` for fragments, typo fixes, frontmatter-only edits, tag/series plumbing, or UI changes.
 - If the user asks for a new post but gives no source or angle, ask for the source/claim first unless they explicitly want a blank/manual scaffold.
 
