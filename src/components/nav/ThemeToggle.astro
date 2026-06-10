@@ -1,8 +1,8 @@
 ---
 ---
 <button
-  id="theme-toggle"
   type="button"
+  data-theme-toggle
   aria-label="切换明暗主题"
   class="inline-flex items-center justify-center w-11 h-11 rounded-md text-muted hover:text-text hover:shadow-ring1 transition-[box-shadow,color] duration-200"
 >
@@ -15,29 +15,32 @@
   </svg>
 </button>
 
-<script is:inline>
-  (function () {
-    var btn = document.getElementById('theme-toggle');
-    if (!btn) return;
-    var sun = btn.querySelector('.sun-icon');
-    var moon = btn.querySelector('.moon-icon');
-    function sync() {
-      var theme = document.documentElement.getAttribute('data-theme') || 'light';
-      if (theme === 'dark') {
-        sun.classList.add('hidden');
-        moon.classList.remove('hidden');
-      } else {
-        sun.classList.remove('hidden');
-        moon.classList.add('hidden');
-      }
-    }
-    sync();
-    btn.addEventListener('click', function () {
-      var cur = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
-      var next = cur === 'dark' ? 'light' : 'dark';
-      document.documentElement.setAttribute('data-theme', next);
-      try { localStorage.setItem('theme', next); } catch (_) {}
-      sync();
+<script>
+  // This component renders twice (desktop nav + mobile drawer); Astro dedupes
+  // module scripts, so bind every instance and keep all icons in sync.
+  const toggles = document.querySelectorAll<HTMLButtonElement>('[data-theme-toggle]');
+
+  function syncIcons() {
+    const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+    toggles.forEach((btn) => {
+      btn.querySelector('.sun-icon')?.classList.toggle('hidden', dark);
+      btn.querySelector('.moon-icon')?.classList.toggle('hidden', !dark);
     });
-  })();
+  }
+
+  syncIcons();
+
+  toggles.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const next =
+        document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      try {
+        localStorage.setItem('theme', next);
+      } catch {
+        /* localStorage unavailable */
+      }
+      syncIcons();
+    });
+  });
 </script>

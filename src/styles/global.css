@@ -35,10 +35,25 @@ svg {
 
 ::selection {
   background: var(--brand);
-  color: #faf9f5;
+  color: var(--on-brand);
 }
 
 :focus-visible {
   outline: 2px solid var(--focus);
   outline-offset: 2px;
+}
+
+/* Shiki dual themes: keep code surfaces on warm tokens (the inline
+   background-color from shiki is cool white/blue-gray) and apply the
+   dark token palette when data-theme="dark". */
+.astro-code {
+  background-color: var(--surface-2) !important;
+}
+
+[data-theme="dark"] .astro-code,
+[data-theme="dark"] .astro-code span {
+  color: var(--shiki-dark) !important;
+  font-style: var(--shiki-dark-font-style) !important;
+  font-weight: var(--shiki-dark-font-weight) !important;
+  text-decoration: var(--shiki-dark-text-decoration) !important;
 }

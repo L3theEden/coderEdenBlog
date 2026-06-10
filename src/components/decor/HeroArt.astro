@@ -1,5 +1,7 @@
 ---
+import { Image } from 'astro:assets';
 import FlameIcon from '~/components/decor/FlameIcon.astro';
+import heroLogo from '~/assets/hero-logo.png';
 
 interface Props {
   class?: string;
@@ -8,10 +10,13 @@ interface Props {
 const { class: className = '' } = Astro.props;
 ---
 <div class={className}>
-  <img
-    src="/hero-logo.png"
+  <Image
+    src={heroLogo}
     alt=""
     aria-hidden="true"
+    width={320}
+    densities={[1, 2]}
+    loading="eager"
     class="hero-art-image block h-auto w-full"
     onerror="this.classList.add('hidden'); this.nextElementSibling?.classList.remove('hidden');"
   />
@@ -19,4 +24,3 @@ const { class: className = '' } = Astro.props;
     <FlameIcon />
   </div>
 </div>
-

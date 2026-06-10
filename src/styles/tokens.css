@@ -10,11 +10,12 @@
   --border-strong: #e8e6dc;
   --brand: #c96442;
   --brand-soft: #d97757;
+  --on-brand: #faf9f5;
   --ring: #d1cfc5;
   --focus: #3898ec;
   --shadow-whisper: 0 4px 24px rgba(0, 0, 0, 0.05);
 
-  --font-serif: "Fraunces", Georgia, serif;
+  --font-serif: "Fraunces", Georgia, "Songti SC", "Noto Serif CJK SC", "Noto Serif SC", "SimSun", serif;
   --font-sans: "Inter", system-ui, -apple-system, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
 

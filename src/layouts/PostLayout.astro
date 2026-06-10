@@ -21,7 +21,12 @@ const dateLabel = post.data.date.toLocaleDateString('zh-CN', {
   year: 'numeric', month: 'long', day: 'numeric',
 });
 ---
-<BaseLayout title={post.data.title} description={post.data.description}>
+<BaseLayout
+  title={post.data.title}
+  description={post.data.description}
+  ogType="article"
+  publishedTime={post.data.date}
+>
   <ReadingProgress />
   <article class="mx-auto max-w-layout px-5 md:px-8 pt-14 pb-24">
     <a href={`/series/${series.id}/`} class="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] text-[color:var(--brand)] hover:opacity-80">
