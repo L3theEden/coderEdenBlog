@@ -6,8 +6,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 The repo is bootstrapped and contains the Astro static site implementation. Before broad code changes, read the project-local development skill and the relevant source:
 
-- `.agents/skills/codereden-blog-dev/SKILL.md` — reusable project workflow for future CoderEden development.
-- `.agents/skills/codereden-blog-dev/references/project-map.md` — route map, schemas, design notes, and growth rules.
+- `.claude/skills/codereden-blog-dev/SKILL.md` — reusable project workflow for future CoderEden development.
+- `.claude/skills/codereden-blog-dev/references/project-map.md` — route map, schemas, design notes, and growth rules.
 - `docs/superpowers/specs/2026-04-21-coder-eden-blog-design.md` — the authoritative design spec (in Chinese) covering information architecture, visual tokens, component behavior, content schema, and acceptance criteria.
 - `docs/superpowers/plans/2026-04-21-coder-eden-blog.md` — the original 18-task implementation plan. Treat it as historical intent and file-name guidance unless the user explicitly asks to execute remaining plan tasks.
 - `DESIGN-claude.md` — the warm-literary design system adapted from Anthropic Claude. This is the visual source of truth.
@@ -56,4 +56,4 @@ This repo uses a spec-then-plan workflow under `docs/superpowers/`:
 
 When starting new work, check whether a spec/plan already exists before designing from scratch.
 
-Keep `AGENTS.md`, `CLAUDE.md`, and `.agents/skills/codereden-blog-dev/` synchronized when durable project conventions change.
+Keep `AGENTS.md`, `CLAUDE.md`, and `.claude/skills/codereden-blog-dev/` synchronized when durable project conventions change.

@@ -41,6 +41,7 @@ Routes:
 - `/tags/` and `/tags/[tag]/`
 - `/about/`
 - `/rss.xml`
+- `/robots.txt` (dynamic route, derives Sitemap URL from `site`)
 
 ## Content Schema
 
@@ -69,7 +70,10 @@ The site adapts the Claude/Anthropic warm-literary style:
 - surfaces: ivory and warm sand
 - accent: terracotta
 - dark mode: warm charcoal, not blue-black
-- type: Fraunces for headings, Inter for UI/body, JetBrains Mono for code
+- type: Fraunces for headings, Inter for UI/body, JetBrains Mono for code — self-hosted via `@fontsource/*` imports in `BaseLayout.astro` (no Google Fonts CDN); `--font-serif` carries explicit zh serif fallbacks
+- text on terracotta (`--brand`) uses `--on-brand` (ivory), never a literal hex
+- code blocks: shiki dual themes; warm surfaces and the dark palette are applied by the `.astro-code` rules in `global.css`
+- hero art: `src/assets/hero-logo.png` rendered through `astro:assets` `<Image>` in `HeroArt.astro`; the same asset is the default OG image
 - depth: borders, ring shadows, and whisper shadows
 
 Avoid:
