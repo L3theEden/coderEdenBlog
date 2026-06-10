@@ -140,7 +140,7 @@ If the user pastes a broken or noisy local path, repair it before giving up. Com
    - Include a `## 参考` section for authoritative sources. Keep direct quotes short and cite links.
    - Avoid the word "正经" in UI-facing copy unless the user explicitly wants that tone. Prefer "技术注疏", "Scholia", or a concrete title.
 
-8. **Humanize before presenting** (conditional, but expected for most literary drafts). After the literary rewrite is complete, use the `humanizer` skill when available and when the draft reads too smooth, too balanced, too explanatory, or too "well-composed." Keep this as a final editing pass, not the source-ingestion or series-selection step. For Scholia, humanize for clarity and rhythm, not for mythic atmosphere. If `humanizer` is unavailable, continue with the manual anti-AI pass:
+8. **Humanize before presenting** (conditional, but expected for most literary drafts). After the literary rewrite is complete, use the `humanizer` skill when available and when the draft reads too smooth, too balanced, too explanatory, or too "well-composed." Keep this as a final editing pass, not the source-ingestion or series-selection step. Humanize 的方向是减法——按 Voice Cues 的「中文反 AI 自查」降低句式与模板密度——不是把文学腔迁移成聊天腔；语域以原稿为准。For Scholia, humanize for clarity and rhythm, not for mythic atmosphere. If `humanizer` is unavailable, continue with the manual anti-AI pass:
    - cut summary-like throat-clearing
    - remove inflated significance language
    - vary paragraph rhythm
@@ -213,6 +213,21 @@ For Scholia:
 - **Readable, not lyrical.** Keep the CoderEden warmth, but use direct technical prose and concrete section headings.
 - **Useful ending.** A judgment table, checklist, or operational rule is better than a literary landing image.
 
+### 中文反 AI 自查（humanize 首查项）
+
+让文章有温度、贴中文语境的关键是减法，不是把书面语改成聊天腔。humanize 时按此清单逐项查：
+
+- **「不是 X，而是 Y」全篇至多一次，金句 blockquote 不用它。** 这是最容易蔓延的中文 AI 句式（含变体「真正的 X 不是…」「它不是…它更像…」）。多余的改写成肯定句或画面句：“迷宫修得再弯，走不出去就只是坟墓”优于“不看它多弯，看它能不能让人走得出来”。Scholia 中用于纠正具体误解的对比句不计入，但小节标题不要连续套同一模具。
+- **「真正」全篇至多两次。** “真正危险的/真正重要的”是中文 AI 的强调瘾，常与上一条连用。
+- **排比不默认三连。** 用两个、四个或一个长句；尤其情绪峰值处不要总是三连，读者会预判节奏。
+- **结尾落在画面或动作之后，删掉后面那句点题。** 主题此前已经说过了，信任画面（“是守夜。”之后不再加“因为火总要有人看着”）。
+- **神话隐喻全篇点 2–3 次。** 每个小节都回到隐喻，框架就成了戏服。
+- **文学篇不用加粗小标题式列表。** 要点写进场景叙述；加粗只留给极少数关键句（如手写页边注、魔鬼的台词）。
+- **同系列不逐字复用旧金句**（如“签约当夜不讨账”）。要么显式做成 refrain，要么写新变体。
+- **深夜场景有配额。** 夜是这个博客的品牌，但连续几篇都开在凌晨，夜就贬值了；隔几篇写一次白天。
+- **排版与署名细节：** 中文引语统一全角“”（代码与英文字面量除外）；MDX 诗节换行统一 `<br />`；引用自家碎片时署名 CoderEden，不借古人名。
+- **保留不动：** 隐喻框架、破折号、文白节奏、每篇一个 blockquote。这些是声音本身，不是病；humanize 不得拉平语域。
+
 ## Common Mistakes
 
 | Mistake                                                 | Fix                                                         |
@@ -235,6 +250,12 @@ For Scholia:
 | Forgetting the paired link                                | Literary post owns `scholia`; Scholia note links back in the first paragraph |
 | Writing stale technical facts                             | Check primary sources or official docs for version-sensitive claims |
 | Putting "正经" in the public label by default             | Use `Scholia` / `技术注疏` unless the user explicitly asks otherwise |
+| 「不是…而是…」连用，金句也用它                              | 全篇限一次；金句改成肯定句或画面句                              |
+| 排比固定三连、出现在每个情绪峰值                            | 换偶数、单句或散句；让节奏不可预判                              |
+| 结尾画面之后再补一句点题                                    | 删掉点题句，信任画面                                            |
+| 每个小节都回到神话隐喻                                      | 全篇 2–3 次足够，多了是戏服                                     |
+| humanize 之后变成聊天腔                                     | 只做减法降密度，不迁移语域；按「中文反 AI 自查」执行            |
+| 中文引号直弯混用、诗节换行手段混用                          | 中文引语统一全角“”；MDX 换行统一 `<br />`                       |
 
 ## Quick Reference
 
