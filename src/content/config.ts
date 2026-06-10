@@ -42,7 +42,12 @@ const fragments = defineCollection({
   schema: z.object({
     text_zh: z.string(),
     text_en: z.string().optional(),
-    author: z.string().default('CoderEden'),
+    author: z
+      .string()
+      .refine((v) => !/^[—–-]/.test(v.trim()), {
+        message: 'author 不要带前导破折号，fragment 模板会自动渲染 "— " 前缀',
+      })
+      .default('CoderEden'),
     date: z.coerce.date(),
   }),
 });
