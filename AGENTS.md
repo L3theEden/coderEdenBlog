@@ -16,13 +16,14 @@ The repo is bootstrapped and contains the Astro static site implementation. Befo
 
 ```bash
 npm install
-npm run dev        # Astro dev server on http://localhost:4321
+npm run dev        # Astro dev server on http://localhost:4321/coderEdenBlog/
 npm run build      # Static output to ./dist
+npm run verify:build # Check built URLs, assets, feeds, and sitemap
 npm run preview    # Serve the built site
 npm run check      # Type-check via @astrojs/check (run before build when types feel off)
 ```
 
-There is no test suite or linter — verification is `npm run check && npm run build` plus a manual browser smoke test (see Task 18 acceptance criteria).
+There is no unit-test suite or linter — verification is `npm run check && npm run build && npm run verify:build` plus a manual browser smoke test (see Task 18 acceptance criteria).
 
 ## Architecture
 
@@ -34,6 +35,14 @@ Static blog built with **Astro 5 + TypeScript**, output is pure HTML/CSS/JS. No 
 - **Interactivity** is vanilla TypeScript in `src/scripts/` (theme init, TOC scroll-spy, reading progress, code-copy). FOUC-safe theme init is injected as an inline `<script is:inline set:html={THEME_INIT}>` inside `<head>` so it runs before paint.
 - **Code highlighting** uses Astro's built-in shiki (configured in `astro.config.mjs`), not a client-side library.
 - **Path alias**: `~/*` → `src/*` (configured in `tsconfig.json`).
+
+## Deployment
+
+- GitHub Pages: `https://l3theeden.github.io/coderEdenBlog/`; `main` deploys via `.github/workflows/deploy.yml`.
+- `astro.config.mjs` owns `site` and `base`; local dev/preview also use `/coderEdenBlog/`.
+- Component and endpoint site URLs use `withBase()` from `src/utils/site-url.ts`.
+- Keep Markdown/MDX links and `scholia.href` site-relative; the remark plugin and Scholia component add the base. Do not hard-code `/coderEdenBlog` into article content.
+- `npm run verify:build` checks generated local links, fragments, assets, RSS, sitemap, and robots after building. Run it before pushing deployment changes.
 
 ## Project Conventions
 

@@ -1,4 +1,6 @@
 ---
+import { withBase } from '~/utils/site-url';
+
 const year = new Date().getFullYear();
 ---
 <footer class="mt-24 border-t border-[color:var(--border)] bg-[color:var(--surface)]">
@@ -13,11 +15,11 @@ const year = new Date().getFullYear();
     <div>
       <p class="text-xs uppercase tracking-widest text-faint">Sitemap</p>
       <ul class="mt-3 space-y-2 text-[15px] text-muted">
-        <li><a href="/blog/" class="hover:text-text">Chronicles · 编年</a></li>
-        <li><a href="/series/" class="hover:text-text">Series · 系列</a></li>
-        <li><a href="/fragments/" class="hover:text-text">Fragments · 碎片</a></li>
-        <li><a href="/about/" class="hover:text-text">About · 关于</a></li>
-        <li><a href="/rss.xml" class="hover:text-text">RSS</a></li>
+        <li><a href={withBase('/blog/')} class="hover:text-text">Chronicles · 编年</a></li>
+        <li><a href={withBase('/series/')} class="hover:text-text">Series · 系列</a></li>
+        <li><a href={withBase('/fragments/')} class="hover:text-text">Fragments · 碎片</a></li>
+        <li><a href={withBase('/about/')} class="hover:text-text">About · 关于</a></li>
+        <li><a href={withBase('/rss.xml')} class="hover:text-text">RSS</a></li>
       </ul>
     </div>
     <div>

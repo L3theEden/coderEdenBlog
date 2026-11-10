@@ -12,6 +12,7 @@ import { THEME_INIT } from '~/scripts/theme-init';
 import Nav from '~/components/nav/Nav.astro';
 import Footer from '~/components/nav/Footer.astro';
 import defaultOgImage from '~/assets/hero-logo.png';
+import { withBase } from '~/utils/site-url';
 
 interface Props {
   title: string;
@@ -29,8 +30,12 @@ const {
   publishedTime,
 } = Astro.props;
 
-const canonical = new URL(Astro.url.pathname, Astro.site);
-const ogImageURL = new URL(ogImage, Astro.site);
+// Astro emits 404.html even when normal page routes use trailing slashes.
+const canonicalPath = Astro.url.pathname.replace(/\/$/, '') === withBase('/404')
+  ? withBase('/404.html')
+  : Astro.url.pathname;
+const canonical = new URL(canonicalPath, Astro.site);
+const ogImageURL = new URL(withBase(ogImage), Astro.site);
 ---
 <!doctype html>
 <html lang="zh-CN">
@@ -40,9 +45,9 @@ const ogImageURL = new URL(ogImage, Astro.site);
     <title>{title} · CoderEden</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="alternate" type="application/rss+xml" title="CoderEden" href="/rss.xml" />
-    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="icon" href={withBase('/favicon.svg')} type="image/svg+xml" />
+    <link rel="alternate" type="application/rss+xml" title="CoderEden" href={withBase('/rss.xml')} />
+    <link rel="sitemap" href={withBase('/sitemap-index.xml')} />
 
     <!-- OG -->
     <meta property="og:type" content={ogType} />

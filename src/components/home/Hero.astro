@@ -1,5 +1,6 @@
 ---
 import HeroArt from '~/components/decor/HeroArt.astro';
+import { withBase } from '~/utils/site-url';
 ---
 <section class="relative mx-auto max-w-layout px-5 md:px-8 pt-20 md:pt-32 pb-16 md:pb-24">
   <div class="grid md:grid-cols-[1fr_auto] gap-12 items-end">
@@ -16,10 +17,10 @@ import HeroArt from '~/components/decor/HeroArt.astro';
         An engineer's notebook in which Greek demigods and Goethe occasionally visit.
       </p>
       <div class="mt-10 flex flex-wrap gap-3">
-        <a href="/blog/" class="inline-flex items-center rounded-md bg-[color:var(--brand)] text-[color:var(--on-brand)] px-5 h-11 text-[15px] font-medium hover:opacity-95">
+        <a href={withBase('/blog/')} class="inline-flex items-center rounded-md bg-[color:var(--brand)] text-[color:var(--on-brand)] px-5 h-11 text-[15px] font-medium hover:opacity-95">
           Read the chronicles ↗
         </a>
-        <a href="/series/" class="inline-flex items-center rounded-md bg-[color:var(--surface-2)] text-[color:var(--text)] px-5 h-11 text-[15px] font-medium hover:shadow-ring1">
+        <a href={withBase('/series/')} class="inline-flex items-center rounded-md bg-[color:var(--surface-2)] text-[color:var(--text)] px-5 h-11 text-[15px] font-medium hover:shadow-ring1">
           Enter a series
         </a>
       </div>

@@ -2,6 +2,7 @@
 import type { CollectionEntry } from 'astro:content';
 import { SERIES_META } from '~/data/series';
 import { readingTimeMinutes, readingTimeLabel } from '~/utils/reading-time';
+import { withBase } from '~/utils/site-url';
 
 interface Props {
   post: CollectionEntry<'posts'>;
@@ -15,7 +16,7 @@ const dateLabel = post.data.date.toLocaleDateString('zh-CN', {
 });
 ---
 <a
-  href={`/blog/${post.slug}/`}
+  href={withBase(`/blog/${post.slug}/`)}
   class="group block rounded-md bg-[color:var(--surface)] border border-[color:var(--border)] p-6 md:p-7 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-ring1"
 >
   <div class="flex items-center gap-3 text-[11px] uppercase tracking-[0.12em]">

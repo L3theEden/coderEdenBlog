@@ -8,6 +8,7 @@ import ScholiaLink from '~/components/post/ScholiaLink.astro';
 import OrnamentalDivider from '~/components/decor/OrnamentalDivider.astro';
 import { SERIES_META } from '~/data/series';
 import { readingTimeMinutes, readingTimeLabel } from '~/utils/reading-time';
+import { withBase } from '~/utils/site-url';
 
 interface Props {
   post: CollectionEntry<'posts'>;
@@ -29,7 +30,7 @@ const dateLabel = post.data.date.toLocaleDateString('zh-CN', {
 >
   <ReadingProgress />
   <article class="mx-auto max-w-layout px-5 md:px-8 pt-14 pb-24">
-    <a href={`/series/${series.id}/`} class="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] text-[color:var(--brand)] hover:opacity-80">
+    <a href={withBase(`/series/${series.id}/`)} class="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] text-[color:var(--brand)] hover:opacity-80">
       <span class="inline-block w-6 h-px bg-current"></span>
       {series.label_en} · {series.label_zh}
     </a>

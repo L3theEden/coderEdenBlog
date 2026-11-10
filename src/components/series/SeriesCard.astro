@@ -1,5 +1,6 @@
 ---
 import type { SeriesMeta } from '~/data/series';
+import { withBase } from '~/utils/site-url';
 
 interface Props {
   meta: SeriesMeta;
@@ -8,7 +9,7 @@ interface Props {
 const { meta, count } = Astro.props;
 ---
 <a
-  href={`/series/${meta.id}/`}
+  href={withBase(`/series/${meta.id}/`)}
   class="group block rounded-lg bg-[color:var(--surface)] border border-[color:var(--border)] p-7 transition-all duration-200 hover:shadow-ring1"
 >
   <div class="flex items-baseline justify-between">

@@ -1,5 +1,6 @@
 ---
 import ThemeToggle from './ThemeToggle.astro';
+import { withBase } from '~/utils/site-url';
 
 const pathname = Astro.url.pathname;
 const items = [
@@ -11,13 +12,13 @@ const items = [
 ];
 
 function isActive(href: string) {
-  if (href === '/') return pathname === '/';
-  return pathname.startsWith(href);
+  if (href === '/') return pathname === withBase('/');
+  return pathname.startsWith(withBase(href));
 }
 ---
 <header class="sticky top-0 z-40 backdrop-blur-sm bg-[color:var(--bg)]/85 border-b border-[color:var(--border)]">
   <div class="mx-auto max-w-layout px-5 md:px-8 h-16 flex items-center justify-between">
-    <a href="/" class="font-serif text-xl tracking-tight text-text">CoderEden</a>
+    <a href={withBase('/')} class="font-serif text-xl tracking-tight text-text">CoderEden</a>
 
     <button
       id="nav-toggle"
@@ -35,7 +36,7 @@ function isActive(href: string) {
     <nav id="nav-menu" class="hidden md:flex items-center gap-8 text-[15px]">
       {items.map((item) => (
         <a
-          href={item.href}
+          href={withBase(item.href)}
           class:list={[
             'transition-colors',
             isActive(item.href) ? 'text-text' : 'text-muted hover:text-text',
@@ -54,7 +55,7 @@ function isActive(href: string) {
     <nav class="mx-auto max-w-layout px-5 py-4 flex flex-col gap-4 text-[16px]">
       {items.map((item) => (
         <a
-          href={item.href}
+          href={withBase(item.href)}
           class:list={['block', isActive(item.href) ? 'text-text' : 'text-muted']}
         >
           <span class="font-serif italic">{item.label_en}</span>

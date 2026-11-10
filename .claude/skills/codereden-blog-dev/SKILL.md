@@ -47,6 +47,7 @@ For deeper project facts, read [references/project-map.md](references/project-ma
 ```bash
 npm run check
 npm run build
+npm run verify:build
 ```
 
 For UI changes, also run `npm run dev` and smoke-test the changed route in a browser when feasible.
@@ -61,6 +62,14 @@ For UI changes, also run `npm run dev` and smoke-test the changed route in a bro
 - Use the `~/*` alias for `src/*` imports when local code already does.
 - English is used for navigation, series names, epigraphs, and the `Scholia` label; Chinese is primary for body copy and may be used for companion titles.
 - Content series are constrained to the five ids in `src/content/config.ts` and `src/data/series.ts`.
+
+## GitHub Pages
+
+- Production URL: `https://l3theeden.github.io/coderEdenBlog/`; the `main` workflow builds and deploys automatically.
+- Local dev and preview also serve under `/coderEdenBlog/`.
+- Use `withBase()` from `src/utils/site-url.ts` for component links and endpoint URLs.
+- Author Markdown/MDX links and `scholia.href` without the deployment prefix. The remark plugin and Scholia component apply it when rendering.
+- Run `npm run verify:build` after building to catch broken links, assets and metadata before deployment.
 
 ## Content Additions
 

@@ -6,7 +6,7 @@ The repository is bootstrapped and contains an Astro static site. The original i
 
 Core files:
 
-- `package.json` — scripts: `dev`, `build`, `preview`, `check`
+- `package.json` — scripts: `dev`, `build`, `preview`, `check`, `verify:build`
 - `astro.config.mjs` — Astro integrations and Shiki config
 - `tsconfig.json` — strict Astro config and `~/*` alias
 - `tailwind.config.mjs` — Tailwind theme mapped to CSS variables
@@ -42,6 +42,15 @@ Routes:
 - `/about/`
 - `/rss.xml`
 - `/robots.txt` (dynamic route, derives Sitemap URL from `site`)
+
+## Deployment
+
+- GitHub Pages URL: `https://l3theeden.github.io/coderEdenBlog/`.
+- `.github/workflows/deploy.yml` runs locked installation, type/content checks, build, generated URL verification, then publishes the artifact on `main` pushes or manual dispatch.
+- `astro.config.mjs` defines the origin and `/coderEdenBlog` base. Routes above are site-relative; prepend the base when visiting production, dev, or preview.
+- `src/utils/base-path.mjs` shares the prefix rule; `src/utils/site-url.ts` exposes `withBase()` to components and endpoints.
+- `src/utils/remark-base-links.mjs` prefixes Markdown links, images and reference definitions. Article sources and Scholia frontmatter retain site-relative paths.
+- `scripts/verify-build.mjs` checks built local links, anchors, assets, RSS, sitemap, robots and canonical origins. Keep it in deployment verification.
 
 ## Content Schema
 
@@ -105,6 +114,7 @@ Baseline after most changes:
 ```bash
 npm run check
 npm run build
+npm run verify:build
 ```
 
 For visual or interaction changes:
