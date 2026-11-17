@@ -1,0 +1,46 @@
+<?xml version='1.0' encoding='utf-8'?>
+<mxfile host="drawio" version="29.7.9">
+  <diagram name="Verification path">
+    <mxGraphModel dx="600" dy="1000" grid="1" gridSize="10" page="0" background="#f5f4ed">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="2" value="让错误留下可执行的记忆" style="whiteSpace=wrap;html=1;fontFamily=PingFang SC;fontColor=#141413;text;strokeColor=none;fillColor=none;fontSize=30;align=left;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="20" y="10" width="510" height="60" />
+        </mxCell>
+        <mxCell id="3" value="&lt;div style=&quot;font-size:30px&quot;&gt;01　仓库与接口&lt;/div&gt;&lt;div style=&quot;font-size:23px;margin-top:12px&quot;&gt;移除坏范例 · 提供正确路径&lt;/div&gt;" style="whiteSpace=wrap;html=1;fontFamily=PingFang SC;fontColor=#141413;rounded=1;arcSize=10;fillColor=#faf9f5;strokeColor=#d1cfc5;strokeWidth=1.5;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="20" y="100" width="490" height="120" />
+        </mxCell>
+        <mxCell id="4" value="&lt;div style=&quot;font-size:30px&quot;&gt;02　确定性检查&lt;/div&gt;&lt;div style=&quot;font-size:23px;margin-top:12px&quot;&gt;类型 · lint · 依赖边界&lt;/div&gt;" style="whiteSpace=wrap;html=1;fontFamily=PingFang SC;fontColor=#141413;rounded=1;arcSize=10;fillColor=#faf9f5;strokeColor=#d1cfc5;strokeWidth=1.5;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="20" y="290" width="490" height="120" />
+        </mxCell>
+        <mxCell id="5" value="&lt;div style=&quot;font-size:30px&quot;&gt;03　真实行为验证&lt;/div&gt;&lt;div style=&quot;font-size:23px;margin-top:12px&quot;&gt;用户路径 · 失败场景 · 断言&lt;/div&gt;" style="whiteSpace=wrap;html=1;fontFamily=PingFang SC;fontColor=#141413;rounded=1;arcSize=10;fillColor=#faf9f5;strokeColor=#d1cfc5;strokeWidth=1.5;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="20" y="480" width="490" height="120" />
+        </mxCell>
+        <mxCell id="6" value="&lt;div style=&quot;font-size:30px&quot;&gt;04　人工判断&lt;/div&gt;&lt;div style=&quot;font-size:23px;margin-top:12px&quot;&gt;需求是否成立 · 风险是否可接受&lt;/div&gt;" style="whiteSpace=wrap;html=1;fontFamily=PingFang SC;fontColor=#141413;rounded=1;arcSize=10;fillColor=#faf9f5;strokeColor=#d1cfc5;strokeWidth=1.5;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="20" y="670" width="490" height="120" />
+        </mxCell>
+        <mxCell id="7" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#c96442;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="3" target="4">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="8" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#c96442;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="4" target="5">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="9" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#c96442;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="5" target="6">
+          <mxGeometry as="geometry" relative="1" />
+        </mxCell>
+        <mxCell id="10" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#c96442;exitX=1;exitY=0.5;entryX=1;entryY=0.5;dashed=1;dashPattern=6 4;" edge="1" parent="1" source="6" target="3">
+          <mxGeometry as="geometry" relative="1">
+            <Array as="points">
+              <mxPoint x="560" y="730" />
+              <mxPoint x="560" y="160" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="11" value="发现重复错误，回到相应层补约束" style="whiteSpace=wrap;html=1;fontFamily=PingFang SC;fontColor=#141413;text;strokeColor=none;fillColor=none;fontSize=26;align=left;fontColor=#5e5d59;" vertex="1" parent="1">
+          <mxGeometry as="geometry" x="20" y="830" width="550" height="50" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

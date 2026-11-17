@@ -1,0 +1,168 @@
+---
+title: "让 Agent 的错误变成可执行约束"
+title_en: "Scholia for Agent Verification"
+description: "从 Lauren Tan 的演讲出发，区分代码结构、静态检查、行为验证与人工判断的职责，用一个可运行的 ESLint 示例，把反复提醒变成检查；同时说明测试证据、形式化验证和禁用注释的适用边界。"
+series: "daedalus-labyrinth"
+tags: ["ai", "architecture", "workflow"]
+date: 2026-11-17
+---
+
+对应主文：[《把忠告砌进墙里》](/blog/daedalus-walls-remember/)。这篇注疏把“墙”还原成接口、检查命令和可复现的验证结果。
+
+## 一、先分清演讲、转述和结论
+
+[@0x_kaize 的文章](https://x.com/0x_kaize/article/2121540306822701393)整理了 Lauren Tan 于 2026 年 11 月 11 日所作的演讲 [*All Code Is Slop (Except Mine)*](https://ai.engineer/code/2026/talks/lauren-tan)。演讲的可迁移主张是：把反复纠正的错误沉淀到代码设计和可执行检查里，再扩大 Agent 的工作规模。
+
+有一个数字需要校正。官方演讲页记录的是团队上月约 11,000 个生产 PR、约 0.5% 的 **revert rate（回退率）**；转述文把后者写成了 PR 被拒绝的比例。两种指标的事件和统计口径不同，不能互换。它们也是演讲者报告的团队结果，不能据此认定多合并 PR 就会提升质量。
+
+下面的配置与验证流程是本文自己的教学示例，不是 Dune 框架的源码，也没有复现演讲中的团队吞吐量。技术资料核对日期为 2026 年 11 月 17 日。
+
+## 二、把约定放在能执行的一层
+
+对一个反复出现的错误，可以依次问：能否移除产生错误的接口选择？能否由工具直接拒绝？剩下的行为要怎样运行验证？最后还有什么需要人判断？
+
+[![四个层次依次为仓库与接口、确定性检查、真实行为验证、人工判断；发现重复错误后，回到前面的层次补充约束。](/images/posts/agent-verification/verification-path.svg)](/images/posts/agent-verification/verification-path.svg)
+
+*图：本文绘制的工程落实顺序，不是演讲原图，也不表示各层的投入比例。*
+
+例如，“渲染进程不能直接使用主进程实现”至少涉及三件事：目录让边界可见；受支持的通信接口提供替代路径；依赖检查阻止越界。只把文件挪进不同目录，JavaScript 的导入机制不会因此自动改变。
+
+接口设计也要接受反例检验。两个业务动作若具有不同的权限和失败语义，硬塞进一个通用函数，可能只是把错误藏得更深。我们要缩小已经确定无效的选择，保留需求实际需要的表达能力。
+
+`AGENTS.md` 仍然适合记录启动方式、模块地图和需要判断的约定。对于已有自动检查的规则，给出命令、原因和修复入口即可。文档应帮助人找到约束，不必另抄一份永远可能落后的规则实现。
+
+## 三、一个可运行示例：拦住静态文件系统导入
+
+先选一条范围足够窄的约束：**`src/renderer/` 下的 JavaScript 文件，不得通过静态 ESM 导入或再导出 `fs` / `fs/promises`，包括它们的 `node:` 写法。** 这只是一个检查示范，不是完整的 Electron 安全配置。
+
+在一个空的临时目录中准备示例；不要把这些命令直接当成已有仓库的初始化步骤：
+
+```bash
+npm init -y
+npm install --save-dev --save-exact eslint@10.15.0
+mkdir -p src/renderer
+```
+
+本文用 Node.js 26.0.0 和 ESLint 10.15.0 验证。ESLint 10.15.0 声明的 Node 版本范围为 `^20.19.0 || ^22.13.0 || >=24`。锁定的版本用于复现本文示例，不代表所有项目都需要升级。
+
+创建 `eslint.config.mjs`：
+
+```js
+export default [
+  {
+    files: ["src/renderer/**/*.js"],
+    linterOptions: { noInlineConfig: true },
+    rules: {
+      "no-restricted-imports": ["error", {
+        paths: ["fs", "fs/promises", "node:fs", "node:fs/promises"]
+          .map((name) => ({
+            name,
+            message: "renderer 不得直接读文件；请通过项目约定的桥接接口请求。",
+          })),
+      }],
+    },
+  },
+];
+```
+
+再创建 `src/renderer/demo.js`：
+
+```js
+import { readFile } from "node:fs/promises";
+
+export const loadTitle = () => readFile("title.txt", "utf8");
+```
+
+运行：
+
+```bash
+npx eslint src/renderer/demo.js --max-warnings 0
+```
+
+这次应以退出码 `1` 失败，输出 `no-restricted-imports` 和上面的修复提示。把 `demo.js` 替换为只接收已经取得的数据：
+
+```js
+export function displayTitle(title) {
+  return title.trim() || "Untitled";
+}
+```
+
+再次运行同一命令，应以退出码 `0` 结束。第二段只用于展示合法依赖方向，不是第一段读取文件行为的等价实现；实际读取工作需要由另一个合适的边界承担。
+
+两次运行说明检查确实能区分这个坏例子和好例子。把它接入 CI 后，还要将对应检查设为受保护分支的合并条件；否则检查失败仍可能被忽略。
+
+[ESLint 文档](https://eslint.org/docs/latest/rules/no-restricted-imports)明确说明，这条规则针对静态导入。它不能单独兜住 `import()`、`require()`，也不会替你解析项目里的所有转发模块、路径别名和运行时通信。若要保证完整的依赖边界，需要结合解析后的依赖图、构建配置与运行时隔离。示例还限定了 `.js`；TypeScript 项目要使用相应解析器和适用规则。
+
+`noInlineConfig` 阻止文件内的 ESLint 配置注释改变规则。它不会阻止有人修改配置文件本身，所以检查配置、忽略清单和断言的变化，同样属于审查范围。
+
+## 四、让验证回答用户能观察到的问题
+
+静态检查拒绝一类写法，运行验证则要观察行为。把“设置页能正常工作”改成一条可执行的功能记录，会更容易发现遗漏：
+
+```text
+功能：修改窗口标题
+起点：干净配置，当前标题为 Untitled
+动作：打开设置，输入 Atlas，保存并重新启动应用
+预期：重启后标题仍为 Atlas
+失败场景：模拟保存失败；界面应提示失败，不能宣称已经保存
+证据：构建版本、运行命令、断言结果、失败日志，以及必要的截图
+```
+
+这里的“重启后仍在”要求验证持久化；一张保存成功的截图无法代替它。“提示失败”也不能只检查某个函数被调用了，要观察用户看到的状态及最终数据。
+
+证据要能对应到同一份改动。记录 commit、执行环境、命令与退出码；随机测试留下 seed 或能回放的操作轨迹。若测试后又改了相关实现，之前的成功记录就不能直接证明新版本通过。
+
+Agent 可以编写和运行这些检查，但验收标准需要来自需求、既有契约或已经确认的故障。让实现和测试共享同一个未经核实的假设，它们可能一起错。遇到回归修复，尤其要看旧实现是否能让同一条断言失败。
+
+对这个博客，仓库现有的 `verify:build` 就是一种小规模实践：构建之后检查生成的页面链接、资源、RSS 和 sitemap 是否留在部署路径下。它比“注意 GitHub Pages 前缀”更容易重复执行。不过它主要检查本地生成物，不会证明所有外链可访问，也不会证明手机上的长表格容易阅读；这些仍需其他验证。
+
+## 五、属性测试、模型检查和证明各回答什么
+
+三种方法都能补充固定用例，覆盖的对象却不同。
+
+**属性测试。** 先描述应当保持的性质，再生成许多输入或操作序列寻找反例。例如，通知被确认后，重试不应让它重新变成未读。[Bombadil](https://github.com/antithesishq/bombadil)是面向 Web 和终端 UI 的属性测试工具。随机点击本身还不够；没有判断失败的性质，工具可能只是在忙碌。
+
+**TLA+ 与 TLC。** 将并发协议抽象成状态和动作，再让模型检查器探索所配置模型的行为。[TLC 文档](https://docs.tlapl.us/using:tlc:start)说明它是显式状态模型检查器，适合检查有限系统。检查结果受模型、状态范围和假设约束；状态空间过大时也可能跑不完。模型中的“已读状态不倒退”，需要另外核对实际同步代码是否忠实实现。
+
+**Lean。** 在形式化定义与假设下构造证明，并由内核检查。它适合对明确的数学性质进行严格推理；一份证明的结论取决于命题和所用公理。没有建立对应关系时，证明一个抽象算法不等于证明整个应用的渲染、网络和平台行为。可参见 [Lean 的公理与计算说明](https://lean-lang.org/theorem_proving_in_lean4/Axioms-and-Computation/)。
+
+选工具时先找最难相信的那句话。是“这几种输入不会崩溃”，还是“任意重试顺序都不会重复扣减”？先把性质写清楚，再决定固定用例、属性测试或形式化方法的成本是否值得。本文没有执行 Bombadil、TLC 或 Lean 实验。
+
+## 六、两条激进建议的边界
+
+原文把注释政策压缩成了“永远不要写注释”。但它链接的 [pstack 注释审查规则](https://github.com/cursor/plugins/blob/main/pstack/agents/comment-sicko.md)仍保留明确例外，包括许可证声明、公共 API 契约、无法重塑的外部约束，以及代码难以表达的 issue / RFC 链接。
+
+可以删掉重复叙述代码的注释；对于“这里先打补丁，以后再重构”，则应检查根因是否能消除。若一个怪异步骤确实来自外部协议，删掉解释反而增加维护成本。注释数量减少不能充当质量指标。
+
+限制 `useEffect` 也要看架构前提。团队可以把副作用集中在框架内部，并给产品代码提供受控接口；普通 React 项目不能因此机械删除全部 Effect。[React 官方文档](https://react.dev/learn/you-might-not-need-an-effect)指出，Effect 用于与外部系统同步；渲染时可计算的数据、由特定用户操作触发的逻辑，往往有更合适的位置。先判断需要同步什么，再决定 API 和检查规则。
+
+这两条建议共同需要的前提，是团队提供了能完成任务的正确路径。只有禁令，Agent 可能通过转发、禁用检查或更隐蔽的写法绕过去，维护者也会如此。
+
+## 七、从一条重复错误开始
+
+挑一个近期已经发生、触发条件明确的问题。先保留能复现它的输入，再修实现和坏范例，最后给下一次改动留下检查。不必一次引入整套工具。
+
+<div class="my-6 [&_table]:w-full [&_th]:text-left [&_th]:font-medium [&_th]:pb-3 [&_td]:align-top [&_td]:py-3 [&_td]:border-t [&_td]:border-[color:var(--border-strong)] [&_th:first-child]:pr-4 [&_td:first-child]:pr-4">
+
+| 眼前的重复问题 | 优先留下什么 |
+| --- | --- |
+| 经常导入错误层的模块 | 可解析的依赖边界与正确接口 |
+| 某个输入反复触发 Bug | 在旧实现上失败的回归用例 |
+| 多步操作的顺序容易出错 | 状态、允许的转换和不变量 |
+| 每次交付都只说“已经完成” | 可重跑的命令、断言及结果记录 |
+| 需求本身有两种合理解释 | 由人确认的行为契约 |
+
+</div>
+
+维护时也要看检查的成本：是否经常误报，是否耗时过长，是否让人习惯忽略失败。过期的约束应随设计一起更新。
+
+每次修复结束，可以问一句很具体的话：把刚才的错误原样放回来，会在哪里失败？如果答案仍然只是“希望审查者看见”，这项经验还没有被工具接住。
+
+## 八、参考
+
+- [@0x_kaize：原始转述文章](https://x.com/0x_kaize/article/2121540306822701393)。本文的阅读起点。
+- [Lauren Tan：All Code Is Slop (Except Mine)，AI Engineer CODE 2026](https://ai.engineer/code/2026/talks/lauren-tan)。官方演讲页、录像入口与机器转录；团队数据按其自述引用。
+- [ESLint：no-restricted-imports](https://eslint.org/docs/latest/rules/no-restricted-imports)；[ESLint 10.15.0 包元数据](https://registry.npmjs.org/eslint/10.15.0)。规则作用范围与示例运行要求。
+- [React：You Might Not Need an Effect](https://react.dev/learn/you-might-not-need-an-effect)。Effect 的用途与常见替代写法。
+- [pstack：Comment Sicko](https://github.com/cursor/plugins/blob/main/pstack/agents/comment-sicko.md)。注释删除政策中的保留例外；引用时为仓库 `main` 版本。
+- [Bombadil 项目](https://github.com/antithesishq/bombadil)；[TLC Model Checker](https://docs.tlapl.us/using:tlc:start)；[Theorem Proving in Lean 4：Axioms and Computation](https://lean-lang.org/theorem_proving_in_lean4/Axioms-and-Computation/)。三类验证工具的官方资料。
